@@ -1,0 +1,60 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{00735A92-6567-447C-866D-E00AB6FECC4C}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="RscAPICora.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="RscCoraBoletoFMX.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="RscCoraBoletoVCL.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="RscAPICora">
+        <MSBuild Projects="RscAPICora.dproj"/>
+    </Target>
+    <Target Name="RscAPICora:Clean">
+        <MSBuild Projects="RscAPICora.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="RscAPICora:Make">
+        <MSBuild Projects="RscAPICora.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="RscCoraBoletoFMX">
+        <MSBuild Projects="RscCoraBoletoFMX.dproj"/>
+    </Target>
+    <Target Name="RscCoraBoletoFMX:Clean">
+        <MSBuild Projects="RscCoraBoletoFMX.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="RscCoraBoletoFMX:Make">
+        <MSBuild Projects="RscCoraBoletoFMX.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="RscCoraBoletoVCL">
+        <MSBuild Projects="RscCoraBoletoVCL.dproj"/>
+    </Target>
+    <Target Name="RscCoraBoletoVCL:Clean">
+        <MSBuild Projects="RscCoraBoletoVCL.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="RscCoraBoletoVCL:Make">
+        <MSBuild Projects="RscCoraBoletoVCL.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="RscAPICora;RscCoraBoletoFMX;RscCoraBoletoVCL"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="RscAPICora:Clean;RscCoraBoletoFMX:Clean;RscCoraBoletoVCL:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="RscAPICora:Make;RscCoraBoletoFMX:Make;RscCoraBoletoVCL:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

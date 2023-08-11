@@ -1,0 +1,67 @@
+package RscCoraBoletoVCL;
+
+{$R *.res}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO OFF}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION OFF}
+{$OVERFLOWCHECKS ON}
+{$RANGECHECKS ON}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES ON}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DEFINE DEBUG}
+{$ENDIF IMPLICITBUILDING}
+{$RUNONLY}
+{$IMPLICITBUILD ON}
+
+requires
+  rtl,
+  IndySystem,
+  IndyProtocols,
+  IndyCore,
+  RESTComponents;
+
+contains
+  Rsc.Api.Cora.Boleto.Consts in '..\Source\Rsc.Api.Cora.Boleto.Consts.pas',
+  Rsc.Api.Cora.Boleto.Credenciais in '..\Source\Rsc.Api.Cora.Boleto.Credenciais.pas',
+  Rsc.Api.Cora.Boleto.Enuns in '..\Source\Rsc.Api.Cora.Boleto.Enuns.pas',
+  Rsc.Api.Cora.Boleto.Notifications in '..\Source\Rsc.Api.Cora.Boleto.Notifications.pas',
+  Rsc.Api.Cora.Boleto in '..\Source\Rsc.Api.Cora.Boleto.pas',
+  Rsc.Api.Cora.Boleto.Schema.Req.AlterarNotificacaoBoleto in '..\Source\Rsc.Api.Cora.Boleto.Schema.Req.AlterarNotificacaoBoleto.pas',
+  Rsc.Api.Cora.Boleto.Schema.Req.NewBoleto in '..\Source\Rsc.Api.Cora.Boleto.Schema.Req.NewBoleto.pas',
+  Rsc.Api.Cora.Boleto.Schema.Req.NewBoletoPix in '..\Source\Rsc.Api.Cora.Boleto.Schema.Req.NewBoletoPix.pas',
+  Rsc.Api.Cora.Boleto.Schema.Req.NewWebhook in '..\Source\Rsc.Api.Cora.Boleto.Schema.Req.NewWebhook.pas',
+  Rsc.Api.Cora.Boleto.Schema.Resp.BoletoDetalhes in '..\Source\Rsc.Api.Cora.Boleto.Schema.Resp.BoletoDetalhes.pas',
+  Rsc.Api.Cora.Boleto.Schema.Resp.Boletos in '..\Source\Rsc.Api.Cora.Boleto.Schema.Resp.Boletos.pas',
+  Rsc.Api.Cora.Boleto.Schema.Resp.NewBoleto in '..\Source\Rsc.Api.Cora.Boleto.Schema.Resp.NewBoleto.pas',
+  Rsc.Api.Cora.Boleto.Schema.Resp.NewBoletoPix in '..\Source\Rsc.Api.Cora.Boleto.Schema.Resp.NewBoletoPix.pas',
+  Rsc.Api.Cora.Boleto.Schema.Resp.NewWebhook in '..\Source\Rsc.Api.Cora.Boleto.Schema.Resp.NewWebhook.pas',
+  Rsc.Api.Cora.Boleto.Schema.Resp.Token in '..\Source\Rsc.Api.Cora.Boleto.Schema.Resp.Token.pas',
+  Rsc.Api.Cora.Boleto.Schema.Resp.Webhooks in '..\Source\Rsc.Api.Cora.Boleto.Schema.Resp.Webhooks.pas',
+  Rsc.Json.DTO in '..\Source\Rsc.Json.DTO.pas',
+  Rsc.Api.Cora.Boleto.Classes.Address in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Address.pas',
+  Rsc.Api.Cora.Boleto.Classes.Customer in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Customer.pas',
+  Rsc.Api.Cora.Boleto.Classes.Destination in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Destination.pas',
+  Rsc.Api.Cora.Boleto.Classes.Discount in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Discount.pas',
+  Rsc.Api.Cora.Boleto.Classes.Document in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Document.pas',
+  Rsc.Api.Cora.Boleto.Classes.Fine in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Fine.pas',
+  Rsc.Api.Cora.Boleto.Classes.Interest in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Interest.pas',
+  Rsc.Api.Cora.Boleto.Classes.Notifications in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Notifications.pas',
+  Rsc.Api.Cora.Boleto.Classes.PaymentTerms in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.PaymentTerms.pas',
+  Rsc.Api.Cora.Boleto.Classes.Services in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Services.pas';
+
+end.
