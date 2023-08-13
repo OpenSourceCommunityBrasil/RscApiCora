@@ -14,12 +14,12 @@ type
   TPaymentTerms = class
   private
     FDiscount: TDiscount;
-    FDueDate: TDateTime;
+    Fdue_date: TDate;
     FFine: TFine;
     FInterest: TInterest;
   public
     property Discount: TDiscount read FDiscount;
-    property due_date: TDateTime read FDueDate write FDueDate;
+    property due_date: TDate read Fdue_date write Fdue_date;
     property Fine: TFine read FFine;
     property Interest: TInterest read FInterest;
   public

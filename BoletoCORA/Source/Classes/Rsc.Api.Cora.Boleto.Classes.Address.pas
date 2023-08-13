@@ -12,7 +12,7 @@ type
     FNumber: string;
     FState: string;
     FStreet: string;
-    FZipCode: TDateTime;
+    Fzip_code: string;
   public
     property City: string read FCity write FCity;
     property Complement: string read FComplement write FComplement;
@@ -20,9 +20,10 @@ type
     property Number: string read FNumber write FNumber;
     property State: string read FState write FState;
     property Street: string read FStreet write FStreet;
-    property zip_code: TDateTime read FZipCode write FZipCode;
+    property zip_code: string read Fzip_code write Fzip_code;
   end;
 
 implementation
 
 end.
+

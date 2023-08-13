@@ -2,19 +2,22 @@ unit Rsc.Api.Cora.Boleto.Credenciais;
 
 interface
 
+uses
+  System.Classes;
+
 type
 
-  TCredenciais = class
+  TCredenciais = class(TPersistent)
   private
     { private declarations }
-    FUserName : string;
-    FPassword : string;
+    Fclient_id : string;
+    Fclient_secret : string;
   protected
     { protected declarations }
-  public
+  published
     { public declarations }
-    property UserName : string read FUserName write FUserName;
-    property Password : string read FPassword write FPassword;
+    property client_id : string read Fclient_id write Fclient_id;
+    property client_secret : string read Fclient_secret write Fclient_secret;
   end;
 
 implementation

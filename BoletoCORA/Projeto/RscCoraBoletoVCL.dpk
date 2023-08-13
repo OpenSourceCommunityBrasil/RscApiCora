@@ -62,6 +62,12 @@ contains
   Rsc.Api.Cora.Boleto.Classes.Interest in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Interest.pas',
   Rsc.Api.Cora.Boleto.Classes.Notifications in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Notifications.pas',
   Rsc.Api.Cora.Boleto.Classes.PaymentTerms in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.PaymentTerms.pas',
-  Rsc.Api.Cora.Boleto.Classes.Services in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Services.pas';
+  Rsc.Api.Cora.Boleto.Classes.ServicesReq in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.ServicesReq.pas',
+  Rsc.Api.Cora.Boleto.Classes.BankSlip in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.BankSlip.pas',
+  Rsc.Api.Cora.Boleto.Classes.PaymentOptions in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.PaymentOptions.pas',
+  Rsc.Api.Cora.Boleto.Classes.Payments in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Payments.pas',
+  Rsc.Api.Cora.Boleto.Classes.Schedules in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Schedules.pas',
+  Rsc.Api.Cora.Boleto.Classes.Pix in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Pix.pas',
+  Rsc.Api.Cora.Boleto.Classes.ServicesResp in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.ServicesResp.pas';
 
 end.

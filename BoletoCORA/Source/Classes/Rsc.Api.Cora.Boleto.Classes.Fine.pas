@@ -6,9 +6,11 @@ type
 
   TFine = class
   private
-    FAmount: Integer;
+    FAmount: Double;
+//    FDate: TDateTime;
   public
-    property Amount: Integer read FAmount write FAmount;
+    property Amount: Double read FAmount write FAmount;
+//    property Date: TDateTime read FDate write FDate;
   end;
 
 implementation

@@ -7,6 +7,9 @@ interface
     , System.Classes
     , System.SysUtils
 
+    , Winapi.ShellAPI
+    , Winapi.Windows
+
     , Generics.Collections
     , Rest.Json
 
@@ -31,7 +34,7 @@ interface
     , Rsc.Api.Cora.Boleto.Schema.Req.AlterarNotificacaoBoleto
     , Rsc.Api.Cora.Boleto.Schema.Req.NewWebhook
 
-
+    , Rsc.Api.Cora.Boleto.Classes.Notifications
 
     ;
 
@@ -40,7 +43,6 @@ type
   TRscCoraBoleto = class(TComponent)
   private
     FCredenciais: TCredenciais;
-
 
     FToken  :TToken;
     FOnToken: TNotificaToken;
@@ -74,28 +76,29 @@ type
 
   public
     { public declarations }
-    function NewToken(auth_code: string = ''): Boolean;
+    function NewToken(auth_code: string = ''; redirect_uri: string = ''): Boolean;
     function GerarBoleto(NewBoleto : TBoletoReq; IdempotencyKey: string): Boolean;
     function GerarBoletoPix(NewBoletoPix : TBoletoPixReq; IdempotencyKey: string): Boolean;
     function ConsultarBoleto(invoice_id: string): Boolean;
     function ConsultarBoletos(DateStart: string; DateEnd: string; BoletoStatus: string = 'OPEN'; CpfCnpjDestinatario: string = ''; page: integer = 1; perPage: integer = 50): Boolean;
     function DeletarBoleto(invoice_id: string): Boolean;
-    function AlterarNotificacaoBoleto(invoice_id: string): Boolean;
+    function AlterarNotificacaoBoleto(invoice_id: string; Notification: TNotification): Boolean;
 
     function CriarWebhook(NewWebhook : TWebhookReq; IdempotencyKey: string): Boolean;
     function ConsultarWebhooks: Boolean;
     function DeletarWebhook(Webhook_id: string): Boolean;
 
-
+    procedure SolicitarAutorizacao(redirect_uri: string; scopes: string);
 
     Constructor Create(AOwner   : TComponent);  Override;
     Destructor  Destroy;  Override;
+
+    property Token  : TToken  read FToken write FToken;
 
   published
 
     property Credenciais  : TCredenciais read FCredenciais write SetCredenciais;
     property Ambiente     : TEnumAmbiente read FAmbiente write SetAmbiente;
-
 
     //
     property OnToken                    : TNotificaToken                    read  FOnToken                    write  FOnToken;
@@ -213,7 +216,7 @@ begin
   FCredenciais := Value;
 end;
 
-function TRscCoraBoleto.NewToken(auth_code: string): Boolean;
+function TRscCoraBoleto.NewToken(auth_code: string = ''; redirect_uri: string = ''): Boolean;
 var
   StrmBody      : TStringStream ;
   StrlHeader    : TStringList ;
@@ -244,17 +247,15 @@ begin
         begin
           StrlHeader.Add('grant_type=authorization_code');
           StrlHeader.Add('code='  + auth_code);
-          StrlHeader.Add('redirect_uri=https://multisofterp.com.br');
+          StrlHeader.Add('redirect_uri='  + Trim(redirect_uri));
         end
       else
         begin
           StrlHeader.Add('grant_type=client_credentials');
         end;
 
-
-
-      vIdHTTP.Request.Username  :=  FCredenciais.UserName;
-      vIdHTTP.Request.Password  :=  FCredenciais.Password;
+      vIdHTTP.Request.Username  :=  FCredenciais.client_id;
+      vIdHTTP.Request.Password  :=  FCredenciais.client_secret;
       vIdHTTP.Request.BasicAuthentication :=  True;
       vIdHTTP.Request.ContentType      :=  'application/x-www-form-urlencoded';
 
@@ -308,7 +309,7 @@ begin
   Result  :=  False;
 
   StrlHeader  :=  TStringList.Create;
-  StrmBody    :=  TStringStream.Create('', TEncoding.UTF8);
+  StrmBody    :=  TStringStream.Create(NewBoleto.ToString, TEncoding.UTF8);
   vIdHTTP     := TIdHTTP.Create(nil);
   SSLHandler  := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
   try
@@ -324,10 +325,11 @@ begin
       vIdHTTP.IOHandler := SSLHandler;
       vIdHTTP.Request.CustomHeaders.Clear;
       vIdHTTP.Request.BasicAuthentication :=  False;
-      vIdHTTP.Request.CustomHeaders.AddValue('Authorization','Bearer ' + Ftoken.AccessToken);
+      vIdHTTP.Request.CustomHeaders.AddValue('Authorization', 'Bearer ' + Ftoken.AccessToken);
+      vIdHTTP.Request.CustomHeaders.AddValue('Idempotency-Key', IdempotencyKey);
       vIdHTTP.Request.ContentType      :=  'application/json';
 
-      StrlHeader.Add('Idempotency-Key=' + IdempotencyKey);
+      StrlHeader.Text :=  NewBoleto.ToString;
 
       case FAmbiente of
         taHomologacao : sUrlBase  :=  URLBASE_HOMOLOGACAO;
@@ -346,14 +348,14 @@ begin
               try
                 InOnGerarBoleto(Self, Boleto, '', vIdHTTP.ResponseCode);
               finally
-                Boleto.FreeInstance;
+                Boleto.Free;
               end;
             end;
         else
           InOnGerarBoleto(Self, nil, UTF8ToWideString(StrmBody.DataString), vIdHTTP.ResponseCode);
         end;
       Except on E: Exception do
-        InOnGerarBoleto(Self, nil, 'Erro Inesperado: '+sLineBreak+ e.Message, 4001);
+        InOnGerarBoleto(Self, nil, 'Erro Inesperado: '+sLineBreak+ e.Message, vIdHTTP.ResponseCode);
       end;
     except on E: Exception do
       begin
@@ -419,7 +421,7 @@ begin
               try
                 InOnGerarBoletoPix(Self, Boleto, '', vIdHTTP.ResponseCode);
               finally
-                Boleto.FreeInstance;
+                Boleto.Free;
               end;
             end;
         else
@@ -487,7 +489,7 @@ begin
               try
                 InOnConsultarBoleto(Self, Boleto, '', vIdHTTP.ResponseCode);
               finally
-                Boleto.FreeInstance;
+                Boleto.Free;
               end;
             end;
         else
@@ -543,22 +545,22 @@ begin
         taProducao    : sUrlBase  :=  URLBASE_PRODUCAO;
       end;
 
-      sUrlBase  :=  ENDPOINT_CONSULTAR_FATURAS;
+      sUrlBase  :=  sUrlBase  + ENDPOINT_CONSULTAR_FATURAS;
 
       sUrlBase  :=  StringReplace(sUrlBase, '{start}', DateStart, [rfReplaceAll]);
       sUrlBase  :=  StringReplace(sUrlBase, '{end}', DateEnd, [rfReplaceAll]);
 
       if BoletoStatus <> EmptyStr then
-        sUrlBase  :=  StringReplace(sUrlBase, '{state}', BoletoStatus, [rfReplaceAll]);
+        sUrlBase  :=  sUrlBase  + '&state=' + BoletoStatus;
 
       if CpfCnpjDestinatario <> EmptyStr then
-        sUrlBase  :=  StringReplace(sUrlBase, '{search}', CpfCnpjDestinatario, [rfReplaceAll]);
+        sUrlBase  :=  sUrlBase  + '&search=' + CpfCnpjDestinatario;
 
       if page.ToString <> EmptyStr then
-        sUrlBase  :=  StringReplace(sUrlBase, '{page}', page.ToString, [rfReplaceAll]);
+        sUrlBase  :=  sUrlBase  + '&page=' + page.ToString;
 
       if perPage.ToString <> EmptyStr then
-        sUrlBase  :=  StringReplace(sUrlBase, '{perPage}', perPage.ToString, [rfReplaceAll]);
+        sUrlBase  :=  sUrlBase  + '&perPage=' + perPage.ToString;
 
       try
         vIdHTTP.Get(sUrlBase, StrmBody);
@@ -570,7 +572,7 @@ begin
               try
                 InOnConsultarBoletos(Self, Boleto, '', vIdHTTP.ResponseCode);
               finally
-                Boleto.FreeInstance;
+                Boleto.Free;
               end;
             end;
         else
@@ -624,7 +626,7 @@ begin
         taProducao    : sUrlBase  :=  URLBASE_PRODUCAO;
       end;
 
-      sUrlBase  :=  ENDPOINT_DELETAR_FATRA;
+      sUrlBase  :=  sUrlBase  + ENDPOINT_DELETAR_FATRA;
 
       sUrlBase  :=  StringReplace(sUrlBase, '{invoice_id}', invoice_id, [rfReplaceAll]);
 
@@ -654,7 +656,7 @@ begin
   end;
 end;
 
-function TRscCoraBoleto.AlterarNotificacaoBoleto(invoice_id: string): Boolean;
+function TRscCoraBoleto.AlterarNotificacaoBoleto(invoice_id: string; Notification: TNotification): Boolean;
 var
   StrmBody      : TStringStream ;
   vIdHTTP : TIdHTTP;
@@ -663,7 +665,7 @@ var
 begin
   Result  :=  False;
 
-  StrmBody    :=  TStringStream.Create('', TEncoding.UTF8);
+  StrmBody    :=  TStringStream.Create(Notification.toString, TEncoding.UTF8);
   vIdHTTP     := TIdHTTP.Create(nil);
   SSLHandler  := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
   try
@@ -687,7 +689,7 @@ begin
         taProducao    : sUrlBase  :=  URLBASE_PRODUCAO;
       end;
 
-      sUrlBase  :=  ENDPOINT_EDITAR_NOTIFICACAO_FATURA;
+      sUrlBase  :=  sUrlBase  +  ENDPOINT_EDITAR_NOTIFICACAO_FATURA;
 
       sUrlBase  :=  StringReplace(sUrlBase, '{invoice_id}', invoice_id, [rfReplaceAll]);
 
@@ -697,13 +699,13 @@ begin
           200, 201, 204:
             begin
               Result  :=  True;
-              InOnDeletarBoleto(Self, EmptyStr, vIdHTTP.ResponseCode);
+              InOnAlterarNotificacaoBoleto(Self, EmptyStr, vIdHTTP.ResponseCode);
             end;
         else
-          InOnDeletarBoleto(Self, UTF8ToWideString(StrmBody.DataString), vIdHTTP.ResponseCode);
+          InOnAlterarNotificacaoBoleto(Self, UTF8ToWideString(StrmBody.DataString), vIdHTTP.ResponseCode);
         end;
       Except on E: Exception do
-        InOnDeletarBoleto(Self, 'Erro Inesperado: '+sLineBreak+ e.Message, 4001);
+        InOnAlterarNotificacaoBoleto(Self, 'Erro Inesperado: '+sLineBreak+ e.Message, 4001);
       end;
     except on E: Exception do
       begin
@@ -767,7 +769,7 @@ begin
               try
                 InOnNewWebhook(Self, Webhook, '', vIdHTTP.ResponseCode);
               finally
-                Webhook.FreeInstance;
+                Webhook.Free;
               end;
             end;
         else
@@ -917,6 +919,25 @@ begin
     SSLHandler.Free;
     StrmBody.Free;
   end;
+end;
+
+procedure TRscCoraBoleto.SolicitarAutorizacao(redirect_uri, scopes: string);
+var
+  sUrlBase  : string;
+begin
+
+  case FAmbiente of
+    taHomologacao : sUrlBase  :=  URLBASE_HOMOLOGACAO;
+    taProducao    : sUrlBase  :=  URLBASE_PRODUCAO;
+  end;
+
+  sUrlBase  :=  sUrlBase  + ENDPOINT_AUTHORIZE;
+  sUrlBase  :=  StringReplace(sUrlBase, '{client_id}', Self.FCredenciais.client_id, [rfReplaceAll]);
+  sUrlBase  :=  StringReplace(sUrlBase, '{redirect_uri}', redirect_uri, [rfReplaceAll]);
+  sUrlBase  :=  StringReplace(sUrlBase, '{scopes}', scopes, [rfReplaceAll]);
+
+  ShellExecute(0, 'open', PWideChar(sUrlBase),  nil,  nil,  SW_SHOWMAXIMIZED);
+
 end;
 
 

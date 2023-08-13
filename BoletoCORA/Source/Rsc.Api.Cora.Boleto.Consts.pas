@@ -8,6 +8,7 @@ const
   URLBASE_PRODUCAO                    = 'https://api.cora.com.br/';
 
   ENDPOINT_TOKEN                      = 'oauth/token';
+  ENDPOINT_AUTHORIZE                  = 'oauth/authorize?client_id={client_id}&response_type=code&redirect_uri={redirect_uri}&scopes={scopes}';
 
   ENDPOINT_GERAR_FATURA               = 'invoices';
   ENDPOINT_GERAR_FATURA_PIX           = 'invoices';

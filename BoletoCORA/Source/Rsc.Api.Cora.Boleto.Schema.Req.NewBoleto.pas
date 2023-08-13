@@ -3,7 +3,7 @@ unit Rsc.Api.Cora.Boleto.Schema.Req.NewBoleto;
 interface
 
 uses
-  System.Generics.Collections, REST.Json.Types, REST.Json
+  System.Generics.Collections, REST.Json.Types, REST.Json, System.JSON, System.SysUtils
 
   , Rsc.Api.Cora.Boleto.Classes.Destination
   , Rsc.Api.Cora.Boleto.Classes.Notifications
@@ -11,14 +11,12 @@ uses
   , Rsc.Api.Cora.Boleto.Classes.Interest
   , Rsc.Api.Cora.Boleto.Classes.Fine
   , Rsc.Api.Cora.Boleto.Classes.PaymentTerms
-  , Rsc.Api.Cora.Boleto.Classes.Services
+  , Rsc.Api.Cora.Boleto.Classes.ServicesReq
   , Rsc.Api.Cora.Boleto.Classes.Address
   , Rsc.Api.Cora.Boleto.Classes.Document
   , Rsc.Api.Cora.Boleto.Classes.Customer
 
   ;
-
-{$M+}
 
 type
 
@@ -27,34 +25,31 @@ type
     FCode: string;
     FCustomer: TCustomer;
     FNotifications: TNotification;
-    FPaymentTerms: TPaymentTerms;
+    Fpayment_terms: TPaymentTerms;
     FServices: TArray<TServices>;
   protected
     function GetAsJson: string;
-  published
+  public
     property Code: string read FCode write FCode;
     property Customer: TCustomer read FCustomer write FCustomer;
     property Notifications: TNotification read FNotifications write FNotifications;
-    property payment_terms: TPaymentTerms read FPaymentTerms write FPaymentTerms;
+    property payment_terms: TPaymentTerms read Fpayment_terms write Fpayment_terms;
     property services: TArray<TServices> read FServices write FServices;
-  public
+
     constructor Create;
     destructor Destroy; override;
+    function ToString: string;
   end;
   
 implementation
 
-
-
-
-
-{ TRoot }
+{ TBoletoReq }
 
 constructor TBoletoReq.Create;
 begin
   inherited;
   FCustomer := TCustomer.Create;
-  FPaymentTerms := TPaymentTerms.Create;
+  Fpayment_terms := TPaymentTerms.Create;
   FNotifications := TNotification.Create;
 end;
 
@@ -63,7 +58,7 @@ var
   Services : TServices;
 begin
   FCustomer.Free;
-  FPaymentTerms.Free;
+  Fpayment_terms.Free;
   FNotifications.Free;
 
   for Services in FServices do
@@ -75,8 +70,30 @@ begin
 end;
 
 function TBoletoReq.GetAsJson: string;
+var
+  vJson : TJSONObject;
+  vJsonPaymentTerms : TJSONObject;
 begin
-  Result  :=  TJson.ObjectToJsonString(Self);
+
+  vJson :=  TJson.ObjectToJsonObject(Self, []);
+  try
+    vJsonPaymentTerms :=  vJson.GetValue('payment_terms') as TJSONObject;
+
+    vJsonPaymentTerms.Get('due_date').JsonValue
+      :=  TJSONString.Create(FormatDateTime('yyyy-mm-dd', vJsonPaymentTerms.GetValue<TDate>('due_date')));
+
+    vJson.RemovePair('payment_terms');
+    vJson.AddPair('payment_terms', vJsonPaymentTerms);
+
+    Result  :=  vJson.ToString;
+  finally
+    vJson.Free;
+  end;
+end;
+
+function TBoletoReq.ToString: string;
+begin
+  Result  :=  GetAsJson;
 end;
 
 end.
