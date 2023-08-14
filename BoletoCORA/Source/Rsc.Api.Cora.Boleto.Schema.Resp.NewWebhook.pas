@@ -3,12 +3,12 @@ unit Rsc.Api.Cora.Boleto.Schema.Resp.NewWebhook;
 interface
 
 uses
-  Rsc.Json.DTO, System.Generics.Collections, REST.Json.Types;
+  System.Generics.Collections, REST.Json.Types;
 
 {$M+}
 
 type
-  TWebhookResp = class(TJsonDTO)
+  TWebhookResp = class//(TJsonDTO)
   private
     FActive: Boolean;
     FConnectionTimeout: Integer;

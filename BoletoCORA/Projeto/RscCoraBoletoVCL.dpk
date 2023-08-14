@@ -52,7 +52,6 @@ contains
   Rsc.Api.Cora.Boleto.Schema.Resp.NewWebhook in '..\Source\Rsc.Api.Cora.Boleto.Schema.Resp.NewWebhook.pas',
   Rsc.Api.Cora.Boleto.Schema.Resp.Token in '..\Source\Rsc.Api.Cora.Boleto.Schema.Resp.Token.pas',
   Rsc.Api.Cora.Boleto.Schema.Resp.Webhooks in '..\Source\Rsc.Api.Cora.Boleto.Schema.Resp.Webhooks.pas',
-  Rsc.Json.DTO in '..\Source\Rsc.Json.DTO.pas',
   Rsc.Api.Cora.Boleto.Classes.Address in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Address.pas',
   Rsc.Api.Cora.Boleto.Classes.Customer in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Customer.pas',
   Rsc.Api.Cora.Boleto.Classes.Destination in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Destination.pas',

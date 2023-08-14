@@ -156,7 +156,6 @@
         <DCCReference Include="..\Source\Rsc.Api.Cora.Boleto.Schema.Resp.NewWebhook.pas"/>
         <DCCReference Include="..\Source\Rsc.Api.Cora.Boleto.Schema.Resp.Token.pas"/>
         <DCCReference Include="..\Source\Rsc.Api.Cora.Boleto.Schema.Resp.Webhooks.pas"/>
-        <DCCReference Include="..\Source\Rsc.Json.DTO.pas"/>
         <DCCReference Include="..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Address.pas"/>
         <DCCReference Include="..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Customer.pas"/>
         <DCCReference Include="..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Destination.pas"/>
@@ -225,6 +224,12 @@
                 <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\22.0\Bpl\Win64\RscCoraBoletoVCL.bpl" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win64">
                         <RemoteName>RscCoraBoletoVCL.bpl</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\22.0\Bpl\Win64\RscCoraBoletoVCL.rsm" Configuration="Debug" Class="DebugSymbols">
+                    <Platform Name="Win64">
+                        <RemoteName>RscCoraBoletoVCL.rsm</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>

@@ -3,7 +3,7 @@ unit Rsc.Api.Cora.Boleto.Schema.Resp.BoletoDetalhes;
 interface
 
 uses
-  Rsc.Json.DTO, System.Generics.Collections, REST.Json.Types
+  System.Generics.Collections, REST.Json.Types
 
   , Rsc.Api.Cora.Boleto.Schema.Resp.NewBoleto
 

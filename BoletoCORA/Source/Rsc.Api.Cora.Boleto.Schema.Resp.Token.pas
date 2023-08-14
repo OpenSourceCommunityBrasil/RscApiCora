@@ -3,36 +3,30 @@ unit Rsc.Api.Cora.Boleto.Schema.Resp.Token;
 interface
 
 uses
-  Rsc.Json.DTO, System.Generics.Collections, REST.Json.Types;
+  REST.Json.Types;
 
 type
 
-  TToken = class(TJsonDTO)
+  TToken = class
   private
-    [JSONName('access_token')]
-    FAccessToken: string;
-    [JSONName('expires_in')]
-    FExpiresIn: Integer;
+    Faccess_token: string;
+    Fexpires_in: Integer;
     [JSONName('not-before-policy')]
     FNotBeforePolicy: Integer;
-    [JSONName('refresh_expires_in')]
-    FRefreshExpiresIn: Integer;
-    [JSONName('refresh_token')]
-    FRefreshToken: string;
+    Frefresh_expires_in: Integer;
+    Frefresh_token: string;
     FScope: string;
-    [JSONName('session_state')]
-    FSessionState: string;
-    [JSONName('token_type')]
-    FTokenType: string;
+    Fsession_state: string;
+    Ftoken_type: string;
   public
-    property AccessToken      : string  read FAccessToken       write FAccessToken;
-    property ExpiresIn        : Integer read FExpiresIn         write FExpiresIn;
-    property NotBeforePolicy  : Integer read FNotBeforePolicy   write FNotBeforePolicy;
-    property RefreshExpiresIn : Integer read FRefreshExpiresIn  write FRefreshExpiresIn;
-    property RefreshToken     : string  read FRefreshToken      write FRefreshToken;
-    property Scope            : string  read FScope             write FScope;
-    property SessionState     : string  read FSessionState      write FSessionState;
-    property TokenType        : string  read FTokenType         write FTokenType;
+    property access_token       : string  read Faccess_token        write Faccess_token;
+    property expires_in         : Integer read Fexpires_in          write Fexpires_in;
+    property NotBeforePolicy    : Integer read FNotBeforePolicy     write FNotBeforePolicy;
+    property refresh_expires_in : Integer read Frefresh_expires_in  write Frefresh_expires_in;
+    property refresh_token      : string  read Frefresh_token       write Frefresh_token;
+    property Scope              : string  read FScope               write FScope;
+    property session_state      : string  read Fsession_state       write Fsession_state;
+    property token_type         : string  read Ftoken_type          write Ftoken_type;
   end;
 
 implementation

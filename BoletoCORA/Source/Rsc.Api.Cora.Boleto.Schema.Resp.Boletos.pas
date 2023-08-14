@@ -28,7 +28,7 @@ type
   public
     destructor Destroy; override;
 
-    function ToString: string;
+    function ToString: string; override;
   end;
 
 implementation

@@ -38,7 +38,7 @@ type
 
     constructor Create;
     destructor Destroy; override;
-    function ToString: string;
+    function ToString: string; override;
   end;
   
 implementation
@@ -72,18 +72,14 @@ end;
 function TBoletoReq.GetAsJson: string;
 var
   vJson : TJSONObject;
-  vJsonPaymentTerms : TJSONObject;
+  ssdaat  : string;
 begin
 
-  vJson :=  TJson.ObjectToJsonObject(Self, []);
+  vJson :=  TJson.ObjectToJsonObject(Self);
   try
-    vJsonPaymentTerms :=  vJson.GetValue('payment_terms') as TJSONObject;
-
-    vJsonPaymentTerms.Get('due_date').JsonValue
-      :=  TJSONString.Create(FormatDateTime('yyyy-mm-dd', vJsonPaymentTerms.GetValue<TDate>('due_date')));
-
-    vJson.RemovePair('payment_terms');
-    vJson.AddPair('payment_terms', vJsonPaymentTerms);
+    ssdaat  :=  FormatDateTime('yyyy-mm-dd', vJson.GetValue('payment_terms').GetValue<TDate>('due_date'));
+    TJSONObject(vJson.GetValue('payment_terms')).RemovePair('due_date');
+    TJSONObject(vJson.GetValue('payment_terms')).AddPair('due_date', ssdaat);
 
     Result  :=  vJson.ToString;
   finally

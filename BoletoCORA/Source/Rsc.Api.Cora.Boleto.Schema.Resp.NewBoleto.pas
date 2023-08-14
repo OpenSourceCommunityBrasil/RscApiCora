@@ -3,7 +3,7 @@ unit Rsc.Api.Cora.Boleto.Schema.Resp.NewBoleto;
 interface
 
 uses
-  Rsc.Json.DTO, System.Generics.Collections, REST.Json.Types
+  System.Generics.Collections, REST.Json.Types
 
   , Rsc.Api.Cora.Boleto.Schema.Req.NewBoletoPix
 
@@ -31,7 +31,7 @@ type
 
   TBoletoResp = class(TBoletoPixReq)
   private
-    FCreatedAt: TDateTime;
+    FCreatedAt: TDate;
     FId: string;
     FPaymentOptions: TPaymentOptions;
     FPayments: TArray<TPayments>;
@@ -45,7 +45,7 @@ type
     property Services;
     property payment_terms;
 //    property payment_forms;
-    property created_at: TDateTime read FCreatedAt write FCreatedAt;
+    property created_at: TDate read FCreatedAt write FCreatedAt;
     property Id: string read FId write FId;
     property payment_options: TPaymentOptions read FPaymentOptions write FPaymentOptions;
     property Payments: TArray<TPayments> read FPayments write FPayments;
@@ -56,7 +56,7 @@ type
     constructor Create; overload;
     destructor Destroy; override;
 
-    function ToString: string;
+    function ToString: string; override;
   end;
   
 implementation

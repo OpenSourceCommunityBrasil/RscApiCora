@@ -8,12 +8,12 @@ type
   private
     FActive: Boolean;
     FRule: string;
-    Fscheduled_to: TDateTime;
+    Fscheduled_to: TDate;
     FStatus: string;
-  published
+  public
     property Active: Boolean read FActive write FActive;
     property Rule: string read FRule write FRule;
-    property scheduled_to: TDateTime read Fscheduled_to write Fscheduled_to;
+    property scheduled_to: TDate read Fscheduled_to write Fscheduled_to;
     property Status: string read FStatus write FStatus;
   end;
 

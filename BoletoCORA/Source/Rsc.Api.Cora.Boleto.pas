@@ -76,7 +76,9 @@ type
 
   public
     { public declarations }
-    function NewToken(auth_code: string = ''; redirect_uri: string = ''): Boolean;
+    function NewToken: Boolean; overload;
+    function NewToken(refresh_token: string): Boolean; overload;
+    function NewToken(auth_code: string; redirect_uri: string): Boolean; overload;
     function GerarBoleto(NewBoleto : TBoletoReq; IdempotencyKey: string): Boolean;
     function GerarBoletoPix(NewBoletoPix : TBoletoPixReq; IdempotencyKey: string): Boolean;
     function ConsultarBoleto(invoice_id: string): Boolean;
@@ -216,7 +218,157 @@ begin
   FCredenciais := Value;
 end;
 
-function TRscCoraBoleto.NewToken(auth_code: string = ''; redirect_uri: string = ''): Boolean;
+function TRscCoraBoleto.NewToken: Boolean;
+var
+  StrmBody      : TStringStream ;
+  StrlHeader    : TStringList ;
+  vIdHTTP : TIdHTTP;
+  SSLHandler: TIdSSLIOHandlerSocketOpenSSL;
+  sUrlBase  : string;
+begin
+  Result  :=  False;
+
+  StrlHeader  :=  TStringList.Create;
+  StrmBody    :=  TStringStream.Create('', TEncoding.UTF8);
+  vIdHTTP     := TIdHTTP.Create(nil);
+  SSLHandler  := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
+  try
+    try
+      SSLHandler.SSLOptions.SSLVersions       :=  [sslvTLSv1, sslvTLSv1_1, sslvTLSv1_2, sslvSSLv23];
+      SSLHandler.SSLOptions.CertFile          :=  '';
+      SSLHandler.SSLOptions.KeyFile           :=  '';
+      SSLHandler.SSLOptions.RootCertFile      :=  '';
+      SSLHandler.Host                         :=  '';
+      SSLHandler.Port                         := 443;
+      SSLHandler.SSLOptions.Mode              := sslmClient;
+
+      vIdHTTP.IOHandler := SSLHandler;
+      vIdHTTP.Request.CustomHeaders.Clear;
+
+      StrlHeader.Add('grant_type=client_credentials');
+
+      vIdHTTP.Request.Username  :=  FCredenciais.client_id;
+      vIdHTTP.Request.Password  :=  FCredenciais.client_secret;
+      vIdHTTP.Request.BasicAuthentication :=  True;
+      vIdHTTP.Request.ContentType      :=  'application/x-www-form-urlencoded';
+
+      case FAmbiente of
+        taHomologacao : sUrlBase  :=  URLBASE_HOMOLOGACAO;
+        taProducao    : sUrlBase  :=  URLBASE_PRODUCAO;
+      end;
+
+      sUrlBase  :=  sUrlBase  + ENDPOINT_TOKEN;
+
+      try
+        vIdHTTP.Post(sUrlBase, StrlHeader, StrmBody);
+        case vIdHTTP.ResponseCode of
+          200, 201:
+            begin
+              Result  :=  True;
+              if FToken <> nil then
+                FToken.FreeInstance;
+              FToken  :=  TJson.JsonToObject<TToken>(StrmBody.DataString);
+              InOnToken(Self, FToken, '', vIdHTTP.ResponseCode);
+            end;
+        else
+          InOnToken(Self, nil, UTF8ToWideString(UTF8Encode(StrmBody.DataString)), vIdHTTP.ResponseCode);
+        end;
+      Except on E: Exception do
+        InOnToken(Self, nil, 'Erro Inesperado: '+sLineBreak+ e.Message, 4001);
+      end;
+    except on E: Exception do
+      begin
+        raise Exception.Create(e.Message);
+      end;
+    end;
+  finally
+    vIdHTTP.Free;
+    SSLHandler.Free;
+    StrmBody.Free;
+    StrlHeader.Free
+  end;
+end;
+
+function TRscCoraBoleto.NewToken(refresh_token: string): Boolean;
+var
+  StrmBody      : TStringStream ;
+  StrlHeader    : TStringList ;
+  vIdHTTP : TIdHTTP;
+  SSLHandler: TIdSSLIOHandlerSocketOpenSSL;
+  sUrlBase  : string;
+begin
+  Result  :=  False;
+
+  StrlHeader  :=  TStringList.Create;
+  StrmBody    :=  TStringStream.Create('', TEncoding.UTF8);
+  vIdHTTP     := TIdHTTP.Create(nil);
+  SSLHandler  := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
+  try
+    try
+      SSLHandler.SSLOptions.SSLVersions       :=  [sslvTLSv1, sslvTLSv1_1, sslvTLSv1_2, sslvSSLv23];
+      SSLHandler.SSLOptions.CertFile          :=  '';
+      SSLHandler.SSLOptions.KeyFile           :=  '';
+      SSLHandler.SSLOptions.RootCertFile      :=  '';
+      SSLHandler.Host                         :=  '';
+      SSLHandler.Port                         := 443;
+      SSLHandler.SSLOptions.Mode              := sslmClient;
+
+      vIdHTTP.IOHandler := SSLHandler;
+      vIdHTTP.Request.CustomHeaders.Clear;
+
+      if refresh_token <> EmptyStr then
+        begin
+          StrlHeader.Add('grant_type=refresh_token');
+          StrlHeader.Add('refresh_token='  + refresh_token);
+        end
+      else
+        begin
+          Exit;
+        end;
+
+      vIdHTTP.Request.Username  :=  FCredenciais.client_id;
+      vIdHTTP.Request.Password  :=  FCredenciais.client_secret;
+      vIdHTTP.Request.BasicAuthentication :=  True;
+      vIdHTTP.Request.ContentType      :=  'application/x-www-form-urlencoded';
+
+      case FAmbiente of
+        taHomologacao : sUrlBase  :=  URLBASE_HOMOLOGACAO;
+        taProducao    : sUrlBase  :=  URLBASE_PRODUCAO;
+      end;
+
+      sUrlBase  :=  sUrlBase  + ENDPOINT_TOKEN;
+
+      try
+        vIdHTTP.Post(sUrlBase, StrlHeader, StrmBody);
+        case vIdHTTP.ResponseCode of
+          200, 201:
+            begin
+              Result  :=  True;
+              if FToken <> nil then
+                FToken.FreeInstance;
+              FToken  :=  TJson.JsonToObject<TToken>(StrmBody.DataString);
+              InOnToken(Self, FToken, '', vIdHTTP.ResponseCode);
+            end;
+        else
+          InOnToken(Self, nil, UTF8ToWideString(UTF8Encode(StrmBody.DataString)), vIdHTTP.ResponseCode);
+        end;
+      Except on E: Exception do
+        InOnToken(Self, nil, 'Erro Inesperado: '+sLineBreak+ e.Message, 4001);
+      end;
+    except on E: Exception do
+      begin
+        raise Exception.Create(e.Message);
+      end;
+    end;
+  finally
+    vIdHTTP.Free;
+    SSLHandler.Free;
+    StrmBody.Free;
+    StrlHeader.Free
+  end;
+end;
+
+function TRscCoraBoleto.NewToken(auth_code, redirect_uri: string): Boolean;
 var
   StrmBody      : TStringStream ;
   StrlHeader    : TStringList ;
@@ -278,7 +430,7 @@ begin
               InOnToken(Self, FToken, '', vIdHTTP.ResponseCode);
             end;
         else
-          InOnToken(Self, nil, UTF8ToWideString(StrmBody.DataString), vIdHTTP.ResponseCode);
+          InOnToken(Self, nil, UTF8ToWideString(UTF8Encode(StrmBody.DataString)), vIdHTTP.ResponseCode);
         end;
       Except on E: Exception do
         InOnToken(Self, nil, 'Erro Inesperado: '+sLineBreak+ e.Message, 4001);
@@ -300,7 +452,7 @@ function TRscCoraBoleto.GerarBoleto(NewBoleto: TBoletoReq;
   IdempotencyKey: string): Boolean;
 var
   StrmBody      : TStringStream ;
-  StrlHeader    : TStringList ;
+  StrlHeader    : TStringStream ;
   vIdHTTP : TIdHTTP;
   SSLHandler: TIdSSLIOHandlerSocketOpenSSL;
   sUrlBase  : string;
@@ -308,8 +460,8 @@ var
 begin
   Result  :=  False;
 
-  StrlHeader  :=  TStringList.Create;
-  StrmBody    :=  TStringStream.Create(NewBoleto.ToString, TEncoding.UTF8);
+  StrlHeader  :=  TStringStream.Create(NewBoleto.ToString, TEncoding.UTF8);
+  StrmBody    :=  TStringStream.Create(EmptyStr, TEncoding.UTF8);
   vIdHTTP     := TIdHTTP.Create(nil);
   SSLHandler  := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
   try
@@ -323,13 +475,27 @@ begin
       SSLHandler.SSLOptions.Mode              := sslmClient;
 
       vIdHTTP.IOHandler := SSLHandler;
+      vIdHTTP.ReadTimeout                       := 9000;
+      vIdHTTP.ConnectTimeout                    := 9000;
+      vIdHTTP.HandleRedirects                   :=  False;
       vIdHTTP.Request.CustomHeaders.Clear;
-      vIdHTTP.Request.BasicAuthentication :=  False;
-      vIdHTTP.Request.CustomHeaders.AddValue('Authorization', 'Bearer ' + Ftoken.AccessToken);
+      vIdHTTP.Request.CustomHeaders.FoldLines := False;
+      vIdHTTP.Request.CustomHeaders.AddValue('Authorization', 'Bearer ' + Ftoken.Access_Token);
       vIdHTTP.Request.CustomHeaders.AddValue('Idempotency-Key', IdempotencyKey);
-      vIdHTTP.Request.ContentType      :=  'application/json';
 
-      StrlHeader.Text :=  NewBoleto.ToString;
+      vIdHTTP.Request.BasicAuthentication :=  False;
+      vIdHTTP.Request.Authentication.Free;
+      vIdHTTP.Request.Authentication := Nil;
+
+      vIdHTTP.Request.Charset                   := 'utf-8';
+      vIdHTTP.Request.AcceptCharSet             := vIdHTTP.Request.Charset;
+      vIdHTTP.Request.Accept                    := '*/*';
+      vIdHTTP.Request.AcceptEncoding            := 'gzip, deflate, br';
+      vIdHTTP.Request.ContentType               := 'application/json';
+      vIdHTTP.Request.ContentEncoding           := 'gzip, identity';
+      vIdHTTP.Request.UserAgent                 := 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36';
+
+//      vIdHTTP.Request.RawHeaders.Text :=  NewBoleto.ToString;
 
       case FAmbiente of
         taHomologacao : sUrlBase  :=  URLBASE_HOMOLOGACAO;
@@ -352,10 +518,23 @@ begin
               end;
             end;
         else
-          InOnGerarBoleto(Self, nil, UTF8ToWideString(StrmBody.DataString), vIdHTTP.ResponseCode);
+          InOnGerarBoleto(Self, nil, UTF8ToWideString(UTF8Encode(StrmBody.DataString)), vIdHTTP.ResponseCode);
         end;
-      Except on E: Exception do
-        InOnGerarBoleto(Self, nil, 'Erro Inesperado: '+sLineBreak+ e.Message, vIdHTTP.ResponseCode);
+      Except
+        On E: EIdHTTPProtocolException do
+         Begin
+          If (Length(E.ErrorMessage) > 0) Or (E.ErrorCode > 0) then
+           Begin
+            If E.ErrorMessage <> '' Then
+              InOnGerarBoleto(Self, nil, 'Erro Inesperado: '+sLineBreak+ E.ErrorMessage, E.ErrorCode)
+            Else
+             InOnGerarBoleto(Self, nil, 'Erro Inesperado: '+sLineBreak+ e.Message, E.ErrorCode);
+           End;
+         End;
+        on E: Exception do
+          begin
+            InOnGerarBoleto(Self, nil, 'Erro Inesperado: '+sLineBreak+ e.Message, vIdHTTP.ResponseCode);
+          end;
       end;
     except on E: Exception do
       begin
@@ -399,7 +578,7 @@ begin
       vIdHTTP.IOHandler := SSLHandler;
       vIdHTTP.Request.CustomHeaders.Clear;
       vIdHTTP.Request.BasicAuthentication :=  False;
-      vIdHTTP.Request.CustomHeaders.AddValue('Authorization','Bearer ' + Ftoken.AccessToken);
+      vIdHTTP.Request.CustomHeaders.AddValue('Authorization','Bearer ' + Ftoken.Access_Token);
       vIdHTTP.Request.ContentType      :=  'application/json';
 
       StrlHeader.Add('Idempotency-Key=' + IdempotencyKey);
@@ -425,7 +604,7 @@ begin
               end;
             end;
         else
-          InOnGerarBoletoPix(Self, nil, UTF8ToWideString(StrmBody.DataString), vIdHTTP.ResponseCode);
+          InOnGerarBoletoPix(Self, nil, UTF8ToWideString(UTF8Encode(StrmBody.DataString)), vIdHTTP.ResponseCode);
         end;
       Except on E: Exception do
         InOnGerarBoletoPix(Self, nil, 'Erro Inesperado: '+sLineBreak+ e.Message, 4001);
@@ -469,7 +648,7 @@ begin
       vIdHTTP.IOHandler := SSLHandler;
       vIdHTTP.Request.CustomHeaders.Clear;
       vIdHTTP.Request.BasicAuthentication :=  False;
-      vIdHTTP.Request.CustomHeaders.AddValue('Authorization','Bearer ' + Ftoken.AccessToken);
+      vIdHTTP.Request.CustomHeaders.AddValue('Authorization','Bearer ' + Ftoken.Access_Token);
       vIdHTTP.Request.ContentType      :=  'application/json';
 
       case FAmbiente of
@@ -493,7 +672,7 @@ begin
               end;
             end;
         else
-          InOnConsultarBoleto(Self, nil, UTF8ToWideString(StrmBody.DataString), vIdHTTP.ResponseCode);
+          InOnConsultarBoleto(Self, nil, UTF8ToWideString(UTF8Encode(StrmBody.DataString)), vIdHTTP.ResponseCode);
         end;
       Except on E: Exception do
         InOnConsultarBoleto(Self, nil, 'Erro Inesperado: '+sLineBreak+ e.Message, 4001);
@@ -537,7 +716,7 @@ begin
       vIdHTTP.IOHandler := SSLHandler;
       vIdHTTP.Request.CustomHeaders.Clear;
       vIdHTTP.Request.BasicAuthentication :=  False;
-      vIdHTTP.Request.CustomHeaders.AddValue('Authorization','Bearer ' + Ftoken.AccessToken);
+      vIdHTTP.Request.CustomHeaders.AddValue('Authorization','Bearer ' + Ftoken.Access_Token);
       vIdHTTP.Request.ContentType      :=  'application/json';
 
       case FAmbiente of
@@ -576,7 +755,7 @@ begin
               end;
             end;
         else
-          InOnConsultarBoletos(Self, nil, UTF8ToWideString(StrmBody.DataString), vIdHTTP.ResponseCode);
+          InOnConsultarBoletos(Self, nil, UTF8ToWideString(UTF8Encode(StrmBody.DataString)), vIdHTTP.ResponseCode);
         end;
       Except on E: Exception do
         InOnConsultarBoletos(Self, nil, 'Erro Inesperado: '+sLineBreak+ e.Message, 4001);
@@ -618,7 +797,7 @@ begin
       vIdHTTP.IOHandler := SSLHandler;
       vIdHTTP.Request.CustomHeaders.Clear;
       vIdHTTP.Request.BasicAuthentication :=  False;
-      vIdHTTP.Request.CustomHeaders.AddValue('Authorization','Bearer ' + Ftoken.AccessToken);
+      vIdHTTP.Request.CustomHeaders.AddValue('Authorization','Bearer ' + Ftoken.Access_Token);
       vIdHTTP.Request.ContentType      :=  'application/json';
 
       case FAmbiente of
@@ -639,7 +818,7 @@ begin
               InOnDeletarBoleto(Self, EmptyStr, vIdHTTP.ResponseCode);
             end;
         else
-          InOnDeletarBoleto(Self, UTF8ToWideString(StrmBody.DataString), vIdHTTP.ResponseCode);
+          InOnDeletarBoleto(Self, UTF8ToWideString(UTF8Encode(StrmBody.DataString)), vIdHTTP.ResponseCode);
         end;
       Except on E: Exception do
         InOnDeletarBoleto(Self, 'Erro Inesperado: '+sLineBreak+ e.Message, 4001);
@@ -681,7 +860,7 @@ begin
       vIdHTTP.IOHandler := SSLHandler;
       vIdHTTP.Request.CustomHeaders.Clear;
       vIdHTTP.Request.BasicAuthentication :=  False;
-      vIdHTTP.Request.CustomHeaders.AddValue('Authorization','Bearer ' + Ftoken.AccessToken);
+      vIdHTTP.Request.CustomHeaders.AddValue('Authorization','Bearer ' + Ftoken.Access_Token);
       vIdHTTP.Request.ContentType      :=  'application/json';
 
       case FAmbiente of
@@ -702,7 +881,7 @@ begin
               InOnAlterarNotificacaoBoleto(Self, EmptyStr, vIdHTTP.ResponseCode);
             end;
         else
-          InOnAlterarNotificacaoBoleto(Self, UTF8ToWideString(StrmBody.DataString), vIdHTTP.ResponseCode);
+          InOnAlterarNotificacaoBoleto(Self, UTF8ToWideString(UTF8Encode(StrmBody.DataString)), vIdHTTP.ResponseCode);
         end;
       Except on E: Exception do
         InOnAlterarNotificacaoBoleto(Self, 'Erro Inesperado: '+sLineBreak+ e.Message, 4001);
@@ -748,7 +927,7 @@ begin
       vIdHTTP.IOHandler := SSLHandler;
       vIdHTTP.Request.CustomHeaders.Clear;
       vIdHTTP.Request.BasicAuthentication :=  False;
-      vIdHTTP.Request.CustomHeaders.AddValue('Authorization','Bearer ' + Ftoken.AccessToken);
+      vIdHTTP.Request.CustomHeaders.AddValue('Authorization','Bearer ' + Ftoken.Access_Token);
       vIdHTTP.Request.CustomHeaders.AddValue('Idempotency-Key',IdempotencyKey);
       vIdHTTP.Request.ContentType      :=  'application/json';
 
@@ -773,7 +952,7 @@ begin
               end;
             end;
         else
-          InOnNewWebhook(Self, nil, UTF8ToWideString(StrlHeader.Text), vIdHTTP.ResponseCode);
+          InOnNewWebhook(Self, nil, UTF8ToWideString(UTF8Encode(StrlHeader.Text)), vIdHTTP.ResponseCode);
         end;
       Except on E: Exception do
         InOnNewWebhook(Self, nil, 'Erro Inesperado: '+sLineBreak+ e.Message, 4001);
@@ -817,7 +996,7 @@ begin
       vIdHTTP.IOHandler := SSLHandler;
       vIdHTTP.Request.CustomHeaders.Clear;
       vIdHTTP.Request.BasicAuthentication :=  False;
-      vIdHTTP.Request.CustomHeaders.AddValue('Authorization','Bearer ' + Ftoken.AccessToken);
+      vIdHTTP.Request.CustomHeaders.AddValue('Authorization','Bearer ' + Ftoken.Access_Token);
       vIdHTTP.Request.ContentType      :=  'application/json';
 
       case FAmbiente of
@@ -841,7 +1020,7 @@ begin
               end;
             end;
         else
-          InOnConsultarWebhooks(Self, nil, UTF8ToWideString(StrmBody.DataString), vIdHTTP.ResponseCode);
+          InOnConsultarWebhooks(Self, nil, UTF8ToWideString(UTF8Encode(StrmBody.DataString)), vIdHTTP.ResponseCode);
         end;
       Except on E: Exception do
         InOnConsultarWebhooks(Self, nil, 'Erro Inesperado: '+sLineBreak+ e.Message, 4001);
@@ -883,7 +1062,7 @@ begin
       vIdHTTP.IOHandler := SSLHandler;
       vIdHTTP.Request.CustomHeaders.Clear;
       vIdHTTP.Request.BasicAuthentication :=  False;
-      vIdHTTP.Request.CustomHeaders.AddValue('Authorization','Bearer ' + Ftoken.AccessToken);
+      vIdHTTP.Request.CustomHeaders.AddValue('Authorization','Bearer ' + Ftoken.Access_Token);
       vIdHTTP.Request.ContentType      :=  'application/json';
 
       case FAmbiente of
@@ -904,7 +1083,7 @@ begin
               InOnDeletarWebhook(Self, EmptyStr, vIdHTTP.ResponseCode);
             end;
         else
-          InOnDeletarWebhook(Self, UTF8ToWideString(StrmBody.DataString), vIdHTTP.ResponseCode);
+          InOnDeletarWebhook(Self, UTF8ToWideString(UTF8Encode(StrmBody.DataString)), vIdHTTP.ResponseCode);
         end;
       Except on E: Exception do
         InOnDeletarWebhook(Self, 'Erro Inesperado: '+sLineBreak+ e.Message, 4001);

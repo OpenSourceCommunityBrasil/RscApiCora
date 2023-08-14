@@ -7,7 +7,7 @@ type
   TPix = class
   private
     FEmv: string;
-  published
+  public
     property Emv: string read FEmv write FEmv;
   end;
 

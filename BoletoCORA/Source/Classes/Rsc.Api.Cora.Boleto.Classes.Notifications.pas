@@ -3,7 +3,7 @@ unit Rsc.Api.Cora.Boleto.Classes.Notifications;
 interface
 
 uses
-  System.Generics.Collections, REST.Json.Types, REST.Json
+  System.Generics.Collections, REST.Json
 
   , Rsc.Api.Cora.Boleto.Classes.Destination
   , Rsc.Api.Cora.Boleto.Classes.Schedules
@@ -28,7 +28,7 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    function toString: string;
+    function ToString: string; override;
 
   end;
 

@@ -3,7 +3,7 @@ unit Rsc.Api.Cora.Boleto.Schema.Resp.Webhooks;
 interface
 
 uses
-  System.Generics.Collections, REST.Json.Types, Rsc.Api.Cora.Boleto.Schema.Resp.NewWebhook;
+  System.Generics.Collections, Rsc.Api.Cora.Boleto.Schema.Resp.NewWebhook;
 
 {$M+}
 
@@ -20,7 +20,7 @@ type
 
 implementation
 
-{ TRoot }
+{ TWebhooksListResp }
 
 destructor TWebhooksListResp.Destroy;
 var

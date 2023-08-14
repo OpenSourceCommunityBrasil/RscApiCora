@@ -7,10 +7,10 @@ type
   TFine = class
   private
     FAmount: Double;
-//    FDate: TDateTime;
+//    FDate: TDate;
   public
     property Amount: Double read FAmount write FAmount;
-//    property Date: TDateTime read FDate write FDate;
+//    property Date: TDate read FDate write FDate;
   end;
 
 implementation
