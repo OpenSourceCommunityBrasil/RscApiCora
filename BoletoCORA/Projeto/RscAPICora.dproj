@@ -159,6 +159,10 @@
         <DCCReference Include="RscCoraBoletoVCL.dcp"/>
         <DCCReference Include="RscCoraBoletoFMX.dcp"/>
         <DCCReference Include="..\Source\Rsc.Api.Cora.Boleto.RegisterVCLFMX.pas"/>
+        <RcItem Include="..\..\Assets\logo.bmp">
+            <ResourceType>BITMAP</ResourceType>
+            <ResourceId>TRscCoraBoleto</ResourceId>
+        </RcItem>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
