@@ -17,4 +17,3 @@ Contatos:  092 41412737 - roniery@rscsistemas.com.br
 	
 #### Se o Componente lhe ajudar fique a vontade para fazer uma doação para nós, assim continuamos nosso trabalho e sempre estaremos buscando novas formas de contribuir com nossa comunidade.
 * Chave Pix: roniery@rscsistemas.com.br
-
