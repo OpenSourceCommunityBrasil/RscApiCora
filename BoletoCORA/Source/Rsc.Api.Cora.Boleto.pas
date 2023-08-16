@@ -136,7 +136,6 @@ type
     property Credenciais  : TCredenciais read FCredenciais write SetCredenciais;
     property Ambiente     : TEnumAmbiente read FAmbiente write SetAmbiente;
 
-    //
     property OnToken                    : TNotificaToken                    read  FOnToken                    write  FOnToken;
     property OnGerarBoleto              : TNotificaGerarBoleto              read  FOnGerarBoleto              write  FOnGerarBoleto;
     property OnGerarBoletoPix           : TNotificaGerarBoletoPix           read  FOnGerarBoletoPix           write  FOnGerarBoletoPix;
@@ -769,7 +768,7 @@ begin
       sUrlBase  :=  StringReplace(sUrlBase, '{end}', DateEnd, [rfReplaceAll]);
 
       if BoletoStatus <> EmptyStr then
-        sUrlBase  :=  sUrlBase  + '&state=' + BoletoStatus;
+        sUrlBase  :=  sUrlBase  + '&state=' + UpperCase(BoletoStatus);
 
       if CpfCnpjDestinatario <> EmptyStr then
         sUrlBase  :=  sUrlBase  + '&search=' + CpfCnpjDestinatario;

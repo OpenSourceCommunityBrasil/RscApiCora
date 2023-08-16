@@ -34,7 +34,7 @@ unit Rsc.Api.Cora.Boleto.Schema.Resp.Token;
 interface
 
 uses
-  REST.Json.Types;
+  REST.Json.Types, REST.Json;
 
 type
 
@@ -58,8 +58,17 @@ type
     property Scope              : string  read FScope               write FScope;
     property session_state      : string  read Fsession_state       write Fsession_state;
     property token_type         : string  read Ftoken_type          write Ftoken_type;
+
+    function ToString: string; override;
   end;
 
 implementation
+
+{ TToken }
+
+function TToken.ToString: string;
+begin
+  Result :=  TJson.ObjectToJsonString(Self);
+end;
 
 end.
