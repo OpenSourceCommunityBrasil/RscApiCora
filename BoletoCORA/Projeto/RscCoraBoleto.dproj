@@ -1,7 +1,7 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{B9B01B5F-A665-4E6F-B243-90CE86CE775A}</ProjectGuid>
-        <MainSource>RscAPICora.dpk</MainSource>
+        <MainSource>RscCoraBoleto.dpk</MainSource>
         <ProjectVersion>19.5</ProjectVersion>
         <FrameworkType>VCL</FrameworkType>
         <Base>True</Base>
@@ -87,7 +87,7 @@
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
         <DCC_Description>Componente para uso da api de boleto do banco CORA</DCC_Description>
-        <SanitizedProjectName>RscAPICora</SanitizedProjectName>
+        <SanitizedProjectName>RscCoraBoleto</SanitizedProjectName>
         <DesignOnlyPackage>true</DesignOnlyPackage>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Android)'!=''">
@@ -181,7 +181,7 @@
         <BorlandProject>
             <Delphi.Personality>
                 <Source>
-                    <Source Name="MainSource">RscAPICora.dpk</Source>
+                    <Source Name="MainSource">RscCoraBoleto.dpk</Source>
                 </Source>
                 <Excluded_Packages>
                     <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\22.0\Bpl\RscAPICoraFMX.bpl">File C:\Users\Public\Documents\Embarcadero\Studio\22.0\Bpl\RscAPICoraFMX.bpl not found</Excluded_Packages>
@@ -206,9 +206,9 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\22.0\Bpl\RscAPICora.bpl" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\22.0\Bpl\RscCoraBoleto.bpl" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
-                        <RemoteName>RscAPICora.bpl</RemoteName>
+                        <RemoteName>RscCoraBoleto.bpl</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>

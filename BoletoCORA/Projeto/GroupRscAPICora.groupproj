@@ -3,7 +3,7 @@
         <ProjectGuid>{00735A92-6567-447C-866D-E00AB6FECC4C}</ProjectGuid>
     </PropertyGroup>
     <ItemGroup>
-        <Projects Include="RscAPICora.dproj">
+        <Projects Include="RscCoraBoleto.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="RscCoraBoletoFMX.dproj">
@@ -20,14 +20,14 @@
             <Default.Personality/>
         </BorlandProject>
     </ProjectExtensions>
-    <Target Name="RscAPICora">
-        <MSBuild Projects="RscAPICora.dproj"/>
+    <Target Name="RscCoraBoleto">
+        <MSBuild Projects="RscCoraBoleto.dproj"/>
     </Target>
-    <Target Name="RscAPICora:Clean">
-        <MSBuild Projects="RscAPICora.dproj" Targets="Clean"/>
+    <Target Name="RscCoraBoleto:Clean">
+        <MSBuild Projects="RscCoraBoleto.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="RscAPICora:Make">
-        <MSBuild Projects="RscAPICora.dproj" Targets="Make"/>
+    <Target Name="RscCoraBoleto:Make">
+        <MSBuild Projects="RscCoraBoleto.dproj" Targets="Make"/>
     </Target>
     <Target Name="RscCoraBoletoFMX">
         <MSBuild Projects="RscCoraBoletoFMX.dproj"/>
@@ -48,13 +48,13 @@
         <MSBuild Projects="RscCoraBoletoVCL.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="RscAPICora;RscCoraBoletoFMX;RscCoraBoletoVCL"/>
+        <CallTarget Targets="RscCoraBoleto;RscCoraBoletoFMX;RscCoraBoletoVCL"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="RscAPICora:Clean;RscCoraBoletoFMX:Clean;RscCoraBoletoVCL:Clean"/>
+        <CallTarget Targets="RscCoraBoleto:Clean;RscCoraBoletoFMX:Clean;RscCoraBoletoVCL:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="RscAPICora:Make;RscCoraBoletoFMX:Make;RscCoraBoletoVCL:Make"/>
+        <CallTarget Targets="RscCoraBoleto:Make;RscCoraBoletoFMX:Make;RscCoraBoletoVCL:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
