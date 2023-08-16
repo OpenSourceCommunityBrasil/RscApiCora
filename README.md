@@ -1,6 +1,8 @@
 # RscApiCora
 ![logo](https://github.com/OpenSourceCommunityBrasil/RscApiCora/blob/main/Assets/logo.png)
 <br>
+<a href="https://discord.gg/pS2xjruCJH"><img alt="join Discord" src="https://img.shields.io/discord/918891794597544056?color=blue&label=OSCBr&logo=discord&style=social"></a>
+<br><br>
 RscApiCora é uma suite de componentes criado para acelerar o desenvolvimento de aplicações que buscam integrar as api's do banco digital CORA em suas aplicações desenvolvidas no Delphi
 
 Principais funcionalidades:
