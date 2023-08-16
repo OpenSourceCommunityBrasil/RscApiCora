@@ -51,8 +51,8 @@ body:
   - type: dropdown
     id: version
     attributes:
-      label: "Versão RscCoraBoleto:"
-      description: "Informe a versão do RscCoraBoleto usada."
+      label: "Versão RscApiCora:"
+      description: "Informe a versão do RscApiCora usada."
       options:
         - 1.0.0.0 (trunk)
     validations:
