@@ -1,5 +1,20 @@
-# API-CORA
-Componentes para uso das api's da CORA
+# RscApiCora
+![logo](https://github.com/OpenSourceCommunityBrasil/API-CORA/assets/53917704/75cd3992-9315-44b5-83a5-1a5256098280)
+<br>
+RscApiCora é uma suite de componentes criado para acelerar o desenvolvimento de aplicações que buscam integrar as api's do banco digital CORA em suas aplicações desenvolvidas no Delphi
 
-# Compnente com código limpo:
-![image](https://github.com/Ronierys2/API-CORA/assets/53917704/688d8059-98fd-4547-b554-743bd0a8e9f8)
+Principais funcionalidades:
+* RAD
+* integração facil e descomplicada com as api's
+* ... e muito mais
+
+## Repositório dos demos:
+https://github.com/OpenSourceCommunityBrasil/RscApiCora-Demos
+
+## Autor
+Roniery Santos Cardoso  
+Contatos:  092 41412737 - roniery@rscsistemas.com.br
+	
+#### Se o Componente lhe ajudar fique a vontade para fazer uma doação para nós, assim continuamos nosso trabalho e sempre estaremos buscando novas formas de contribuir com nossa comunidade.
+* Chave Pix: roniery@rscsistemas.com.br
+
