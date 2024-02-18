@@ -41,9 +41,11 @@ type
     FDigitable: string;
     FRegistered: Boolean;
     FUrl: string;
+    fOur_Number: string;
   public
     property Barcode    : string  read FBarcode     write FBarcode;
     property Digitable  : string  read FDigitable   write FDigitable;
+    property Our_Number : string read fOur_Number  write fOur_Number;
     property Registered : Boolean read FRegistered  write FRegistered;
     property Url        : string  read FUrl         write FUrl;
   end;

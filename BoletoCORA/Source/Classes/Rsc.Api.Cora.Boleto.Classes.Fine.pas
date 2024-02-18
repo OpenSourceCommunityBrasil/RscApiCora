@@ -35,13 +35,25 @@ interface
 
 type
 
+  TFineResp = class
+  private
+    FAmount: Double;
+    FDate: TDate;
+    FRate: Double;
+  public
+    property Amount: Double read FAmount write FAmount;
+    property Date: TDate read FDate write FDate;
+  end;
+
   TFine = class
   private
     FAmount: Double;
-//    FDate: TDate;
+    FDate: TDate;
+    FRate: Double;
   public
     property Amount: Double read FAmount write FAmount;
-//    property Date: TDate read FDate write FDate;
+    property Date: TDate read FDate write FDate;
+    property Rate : Double read FRate write FRate;
   end;
 
 implementation

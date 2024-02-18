@@ -58,6 +58,7 @@ type
     FNotifications: TNotification;
     Fpayment_terms: TPaymentTerms;
     FServices: TArray<TServices>;
+    Fpayment_forms: TArray<string>;
   protected
     function GetAsJson: string;
   public
@@ -66,6 +67,7 @@ type
     property Notifications: TNotification read FNotifications write FNotifications;
     property payment_terms: TPaymentTerms read Fpayment_terms write Fpayment_terms;
     property services: TArray<TServices> read FServices write FServices;
+    property payment_forms: TArray<string> read Fpayment_forms write Fpayment_forms;
 
     constructor Create;
     destructor Destroy; override;
@@ -82,6 +84,13 @@ begin
   FCustomer := TCustomer.Create;
   Fpayment_terms := TPaymentTerms.Create;
   FNotifications := TNotification.Create;
+
+  SetLength(FServices, 0);
+  SetLength(Fpayment_forms, 2);
+
+  Fpayment_forms[0]  :=  'BANK_SLIP';
+  Fpayment_forms[1]  :=  'PIX';
+
 end;
 
 destructor TBoletoReq.Destroy;
@@ -106,11 +115,36 @@ var
   ssdaat  : string;
 begin
 
-  vJson :=  TJson.ObjectToJsonObject(Self);
+  vJson :=  TJson.ObjectToJsonObject(Self, [joIgnoreEmptyStrings, joIgnoreEmptyArrays]);
   try
     ssdaat  :=  FormatDateTime('yyyy-mm-dd', vJson.GetValue('payment_terms').GetValue<TDate>('due_date'));
     TJSONObject(vJson.GetValue('payment_terms')).RemovePair('due_date');
     TJSONObject(vJson.GetValue('payment_terms')).AddPair('due_date', ssdaat);
+
+    if TJSONObject(TJSONObject(vJson.GetValue('payment_terms')).getvalue('fine')).getValue('date').AsType<TDate> < Now
+    then
+      begin
+        TJSONObject(TJSONObject(vJson.GetValue('payment_terms')).getvalue('fine')).RemovePair('date');
+      end
+    else
+      begin
+        if TJSONObject(TJSONObject(vJson.GetValue('payment_terms')).getvalue('fine')).getValue('amount').AsType<Double> >= 0
+        then
+          begin
+            TJSONObject(TJSONObject(vJson.GetValue('payment_terms')).getvalue('fine')).RemovePair('date');
+            TJSONObject(TJSONObject(vJson.GetValue('payment_terms')).getvalue('fine')).RemovePair('rate');
+          end
+        else
+          begin
+            TJSONObject(TJSONObject(vJson.GetValue('payment_terms')).getvalue('fine')).RemovePair('amount');
+
+            if TJSONObject(TJSONObject(vJson.GetValue('payment_terms')).getvalue('fine')).getValue('rate').AsType<Double> <= 0
+            then
+              begin
+                TJSONObject(TJSONObject(vJson.GetValue('payment_terms')).getvalue('fine')).RemovePair('rate');
+              end;
+          end;
+      end;
 
     Result  :=  vJson.ToString;
   finally

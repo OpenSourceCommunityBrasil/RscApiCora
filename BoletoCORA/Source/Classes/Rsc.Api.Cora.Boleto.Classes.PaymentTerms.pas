@@ -51,7 +51,7 @@ type
   public
     property Discount: TDiscount read FDiscount;
     property due_date: TDate read Fdue_date write Fdue_date;
-    property Fine: TFine read FFine;
+    property Fine: TFine read FFine write FFine;
     property Interest: TInterest read FInterest;
   public
     constructor Create;

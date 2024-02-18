@@ -60,19 +60,6 @@ type
 
 
   TBoletoDetalhesResp = class(TBoletoResp)
-//  private
-//  public
-//    property Code;
-//    property created_at;
-//    property Customer;
-//    property Id;
-//    property payment_options;
-//    property payment_terms;
-//    property Payments;
-//    property Services;
-//    property Status;
-//    property total_amount;
-//    property total_paid;
   end;
 
 implementation

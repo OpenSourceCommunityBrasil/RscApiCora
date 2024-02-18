@@ -35,6 +35,12 @@ interface
 
 type
 
+  TDiscountResp = class
+  private
+    FFixed: Integer;
+  published
+    property Fixed: Integer read FFixed write FFixed;
+  end;
 
   TDiscount = class
   private

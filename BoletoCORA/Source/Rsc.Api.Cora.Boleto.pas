@@ -87,10 +87,14 @@ type
     FOnNewWebhook: TNotificaNewWebhook;
     FOnConsultarWebhooks: TNotificaConsultarWebhooks;
     FOnDeletarWebhook: TNotificaDeletarWebhook;
+    FDownalodPDF: Boolean;
+    FPathDownloadPDF: string;
 
     procedure SetCredenciais(const Value: TCredenciais);
     procedure SetAmbiente(const Value: TEnumAmbiente);
     function GetAbout: string;
+    procedure SetDownalodPDF(const Value: Boolean);
+    procedure SetPathDownloadPDF(const Value: string);
     { private declarations }
   protected
     { protected declarations }
@@ -105,6 +109,9 @@ type
     procedure InOnNewWebhook(Sender : TObject; Const NewWebhook: TWebhookResp = nil; Erro: String    = '';  CodResp: integer  = -1);
     procedure InOnConsultarWebhooks(Sender : TObject; Const Webhooks: TWebhooksListResp = nil; Erro: String    = '';  CodResp: integer  = -1);
     procedure InOnDeletarWebhook(Sender : TObject; Const Erro: String    = '';  CodResp: integer  = -1);
+
+    procedure VerificarPathDownloadPDF;
+    procedure DownloadBoletoPDF(const NomeFile: string; Const UrlDownload: string);
 
   public
     { public declarations }
@@ -133,8 +140,10 @@ type
 
     property About : string read GetAbout;
 
-    property Credenciais  : TCredenciais read FCredenciais write SetCredenciais;
-    property Ambiente     : TEnumAmbiente read FAmbiente write SetAmbiente;
+    property Credenciais    : TCredenciais read FCredenciais write SetCredenciais;
+    property Ambiente       : TEnumAmbiente read FAmbiente write SetAmbiente;
+    property DownalodPDF    : Boolean read FDownalodPDF write SetDownalodPDF;
+    property PathDownloadPDF: string read FPathDownloadPDF write SetPathDownloadPDF;
 
     property OnToken                    : TNotificaToken                    read  FOnToken                    write  FOnToken;
     property OnGerarBoleto              : TNotificaGerarBoleto              read  FOnGerarBoleto              write  FOnGerarBoleto;
@@ -162,6 +171,7 @@ begin
   inherited;
   FCredenciais  :=  TCredenciais.Create;
   FToken        :=  TToken.Create;
+  FDownalodPDF  :=  False;
 end;
 
 destructor TRscCoraBoleto.Destroy;
@@ -169,6 +179,28 @@ begin
   FToken.Free;
   FCredenciais.Free;
   inherited;
+end;
+
+procedure TRscCoraBoleto.DownloadBoletoPDF(const NomeFile: string; Const UrlDownload: string);
+var
+  fileDownload: TFileStream;
+  IdHTTP  : TIdHTTP;
+begin
+  if UrlDownload = '' then
+    Exit;
+  if NomeFile = '' then
+    Exit;
+  IdHTTP  := TIdHTTP.Create(nil);
+  fileDownload := TFileStream.Create(FPathDownloadPDF + ExtractFileName(NomeFile) + '.pdf', fmCreate);
+  try
+    try
+      IdHTTP.Get(UrlDownload, fileDownload);
+    except
+    end;
+  finally
+    FreeAndNil(fileDownload);
+    IdHTTP.Free;
+  end;
 end;
 
 procedure TRscCoraBoleto.InOnToken(Sender: TObject; const Token: TToken;
@@ -181,6 +213,16 @@ end;
 procedure TRscCoraBoleto.InOnGerarBoleto(Sender: TObject;
   const Boleto: TBoletoResp; Erro: String; CodResp: integer);
 begin
+
+  if Boleto <> nil then
+    begin
+      if DownalodPDF then
+        begin
+          VerificarPathDownloadPDF;
+          DownloadBoletoPDF(Boleto.Code, Boleto.Payment_Options.bank_slip.Url);
+        end;
+    end;
+
   if Assigned(FOnGerarBoleto) then
      FOnGerarBoleto(Sender, Boleto, Erro, CodResp);
 end;
@@ -249,6 +291,16 @@ end;
 procedure TRscCoraBoleto.SetCredenciais(const Value: TCredenciais);
 begin
   FCredenciais := Value;
+end;
+
+procedure TRscCoraBoleto.SetDownalodPDF(const Value: Boolean);
+begin
+  FDownalodPDF := Value;
+end;
+
+procedure TRscCoraBoleto.SetPathDownloadPDF(const Value: string);
+begin
+  FPathDownloadPDF := Value;
 end;
 
 function TRscCoraBoleto.NewToken: Boolean;
@@ -528,8 +580,6 @@ begin
       vIdHTTP.Request.ContentEncoding           := 'gzip, identity';
       vIdHTTP.Request.UserAgent                 := 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36';
 
-//      vIdHTTP.Request.RawHeaders.Text :=  NewBoleto.ToString;
-
       case FAmbiente of
         taHomologacao : sUrlBase  :=  URLBASE_HOMOLOGACAO;
         taProducao    : sUrlBase  :=  URLBASE_PRODUCAO;
@@ -657,7 +707,7 @@ end;
 
 function TRscCoraBoleto.GetAbout: string;
 begin
-  Result  :=  'V 1.0.0';
+  Result  :=  'V 1.2.0';
 end;
 
 function TRscCoraBoleto.ConsultarBoleto(invoice_id: string): Boolean;
@@ -1157,5 +1207,29 @@ begin
 
 end;
 
+
+procedure TRscCoraBoleto.VerificarPathDownloadPDF;
+begin
+  if FPathDownloadPDF <> '' then
+    begin
+      if not DirectoryExists(FPathDownloadPDF) then
+        begin
+          try
+            if not ForceDirectories(PwideChar(FPathDownloadPDF)) then
+              begin
+                FPathDownloadPDF :=  ExtractFilePath(ParamStr(0))  + 'Boleto\PDF\';
+              end;
+          except on E: Exception do
+            FPathDownloadPDF  :=  ExtractFilePath(ParamStr(0))  + 'Boleto\PDF\';
+          end;
+        end;
+    end
+  else
+    begin
+      FPathDownloadPDF  :=  ExtractFilePath(ParamStr(0))  + 'Boleto\PDF\';
+      VerificarPathDownloadPDF;
+    end;
+
+end;
 
 end.
