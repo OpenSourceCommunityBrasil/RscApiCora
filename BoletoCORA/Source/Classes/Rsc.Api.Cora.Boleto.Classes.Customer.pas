@@ -44,15 +44,15 @@ type
 
   TCustomer = class
   private
-    FAddress: TAddress;
-    FDocument: TDocument;
-    FEmail: string;
     FName: string;
+    FEmail: string;
+    FDocument: TDocument;
+    FAddress: TAddress;
   public
-    property Address: TAddress read FAddress;
-    property Document: TDocument read FDocument;
-    property Email: string read FEmail write FEmail;
     property Name: string read FName write FName;
+    property Email: string read FEmail write FEmail;
+    property Document: TDocument read FDocument;
+    property Address: TAddress read FAddress;
   public
     constructor Create;
     destructor Destroy; override;

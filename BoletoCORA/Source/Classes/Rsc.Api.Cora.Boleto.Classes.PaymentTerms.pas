@@ -44,14 +44,14 @@ type
 
   TPaymentTerms = class
   private
-    FDiscount: TDiscount;
     Fdue_date: TDate;
     FFine: TFine;
+    FDiscount: TDiscount;
     FInterest: TInterest;
   public
-    property Discount: TDiscount read FDiscount;
     property due_date: TDate read Fdue_date write Fdue_date;
     property Fine: TFine read FFine write FFine;
+    property Discount: TDiscount read FDiscount;
     property Interest: TInterest read FInterest;
   public
     constructor Create;

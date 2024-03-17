@@ -46,6 +46,7 @@ uses
   , Rsc.Api.Cora.Boleto.Classes.Address
   , Rsc.Api.Cora.Boleto.Classes.Document
   , Rsc.Api.Cora.Boleto.Classes.Customer
+  , Rsc.Api.Cora.Boleto.Classes.Installment
 
   ;
 
@@ -55,19 +56,22 @@ type
   private
     FCode: string;
     FCustomer: TCustomer;
-    FNotifications: TNotification;
-    Fpayment_terms: TPaymentTerms;
     FServices: TArray<TServices>;
+    Fpayment_terms: TPaymentTerms;
+    Finstallment: TInstallment;
+    FNotifications: TNotification;
     Fpayment_forms: TArray<string>;
-  protected
-    function GetAsJson: string;
+    FIsCarne: Boolean;
   public
     property Code: string read FCode write FCode;
     property Customer: TCustomer read FCustomer write FCustomer;
-    property Notifications: TNotification read FNotifications write FNotifications;
-    property payment_terms: TPaymentTerms read Fpayment_terms write Fpayment_terms;
     property services: TArray<TServices> read FServices write FServices;
+    property payment_terms: TPaymentTerms read Fpayment_terms write Fpayment_terms;
+    property installment: TInstallment read Finstallment write Finstallment;
+    property Notifications: TNotification read FNotifications write FNotifications;
     property payment_forms: TArray<string> read Fpayment_forms write Fpayment_forms;
+
+    property IsCarne: Boolean read FIsCarne write FIsCarne;
 
     constructor Create;
     destructor Destroy; override;
@@ -81,9 +85,10 @@ implementation
 constructor TBoletoReq.Create;
 begin
   inherited;
-  FCustomer := TCustomer.Create;
-  Fpayment_terms := TPaymentTerms.Create;
-  FNotifications := TNotification.Create;
+  FCustomer       := TCustomer.Create;
+  Fpayment_terms  := TPaymentTerms.Create;
+  FNotifications  := TNotification.Create;
+  Finstallment    := TInstallment.Create;
 
   SetLength(FServices, 0);
   SetLength(Fpayment_forms, 2);
@@ -100,6 +105,7 @@ begin
   FCustomer.Free;
   Fpayment_terms.Free;
   FNotifications.Free;
+  Finstallment.Free;
 
   for Services in FServices do
     begin
@@ -109,14 +115,23 @@ begin
   inherited;
 end;
 
-function TBoletoReq.GetAsJson: string;
+function TBoletoReq.ToString: string;
 var
   vJson : TJSONObject;
   ssdaat  : string;
+  bCarne: boolean;
 begin
 
-  vJson :=  TJson.ObjectToJsonObject(Self, [joIgnoreEmptyStrings, joIgnoreEmptyArrays]);
+  vJson :=  TJson.ObjectToJsonObject(Self);
   try
+      if vJson.TryGetValue<boolean>('isCarne', bCarne) then
+      begin
+        vJson.RemovePair('isCarne');
+
+        if not bCarne then
+          vJson.RemovePair('installment');
+      end;
+
     ssdaat  :=  FormatDateTime('yyyy-mm-dd', vJson.GetValue('payment_terms').GetValue<TDate>('due_date'));
     TJSONObject(vJson.GetValue('payment_terms')).RemovePair('due_date');
     TJSONObject(vJson.GetValue('payment_terms')).AddPair('due_date', ssdaat);
@@ -150,11 +165,6 @@ begin
   finally
     vJson.Free;
   end;
-end;
-
-function TBoletoReq.ToString: string;
-begin
-  Result  :=  GetAsJson;
 end;
 
 end.

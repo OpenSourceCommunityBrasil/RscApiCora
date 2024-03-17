@@ -95,7 +95,7 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    function ToString: string;
+    function ToString: string; override;
   end;
   
 implementation

@@ -54,14 +54,12 @@ interface
 
     , Rsc.Api.Cora.Boleto.Schema.Resp.Token
     , Rsc.Api.Cora.Boleto.Schema.Resp.NewBoleto
-    , Rsc.Api.Cora.Boleto.Schema.Resp.NewBoletoPix
     , Rsc.Api.Cora.Boleto.Schema.Resp.BoletoDetalhes
     , Rsc.Api.Cora.Boleto.Schema.Resp.Boletos
     , Rsc.Api.Cora.Boleto.Schema.Resp.NewWebhook
     , Rsc.Api.Cora.Boleto.Schema.Resp.Webhooks
 
     , Rsc.Api.Cora.Boleto.Schema.Req.NewBoleto
-    , Rsc.Api.Cora.Boleto.Schema.Req.NewBoletoPix
     , Rsc.Api.Cora.Boleto.Schema.Req.AlterarNotificacaoBoleto
     , Rsc.Api.Cora.Boleto.Schema.Req.NewWebhook
 
@@ -79,7 +77,6 @@ type
     FOnToken: TNotificaToken;
     FAmbiente: TEnumAmbiente;
     FOnGerarBoleto: TNotificaGerarBoleto;
-    FOnGerarBoletoPix: TNotificaGerarBoletoPix;
     FOnConsultarBoleto: TNotificaConsultarBoleto;
     FOnConsultarBoletos: TNotificaConsultarBoletos;
     FOnDeletarBoleto: TNotificaDeletarBoleto;
@@ -100,7 +97,6 @@ type
     { protected declarations }
     procedure InOnToken(Sender : TObject; Const Token: TToken = nil; Erro: String    = '';  CodResp: integer  = -1);
     procedure InOnGerarBoleto(Sender : TObject; Const Boleto: TBoletoResp = nil; Erro: String    = '';  CodResp: integer  = -1);
-    procedure InOnGerarBoletoPix(Sender : TObject; Const BoletoPix: TBoletoPixResp = nil; Erro: String    = '';  CodResp: integer  = -1);
     procedure InOnConsultarBoleto(Sender : TObject; Const BoletoDetalhes: TBoletoDetalhesResp = nil; Erro: String    = '';  CodResp: integer  = -1);
     procedure InOnConsultarBoletos(Sender : TObject; Const BoletosList: TBoletosListResp = nil; Erro: String    = '';  CodResp: integer  = -1);
     procedure InOnDeletarBoleto(Sender : TObject; Const Erro: String    = '';  CodResp: integer  = -1);
@@ -118,8 +114,8 @@ type
     function NewToken: Boolean; overload;
     function NewToken(refresh_token: string): Boolean; overload;
     function NewToken(auth_code: string; redirect_uri: string): Boolean; overload;
+
     function GerarBoleto(NewBoleto : TBoletoReq; IdempotencyKey: string): Boolean;
-    function GerarBoletoPix(NewBoletoPix : TBoletoPixReq; IdempotencyKey: string): Boolean;
     function ConsultarBoleto(invoice_id: string): Boolean;
     function ConsultarBoletos(DateStart: string; DateEnd: string; BoletoStatus: string = 'OPEN'; CpfCnpjDestinatario: string = ''; page: integer = 1; perPage: integer = 50): Boolean;
     function DeletarBoleto(invoice_id: string): Boolean;
@@ -147,7 +143,6 @@ type
 
     property OnToken                    : TNotificaToken                    read  FOnToken                    write  FOnToken;
     property OnGerarBoleto              : TNotificaGerarBoleto              read  FOnGerarBoleto              write  FOnGerarBoleto;
-    property OnGerarBoletoPix           : TNotificaGerarBoletoPix           read  FOnGerarBoletoPix           write  FOnGerarBoletoPix;
     property OnConsultarBoleto          : TNotificaConsultarBoleto          read  FOnConsultarBoleto          write  FOnConsultarBoleto;
     property OnConsultarBoletos         : TNotificaConsultarBoletos         read  FOnConsultarBoletos         write  FOnConsultarBoletos;
     property OnDeletarBoleto            : TNotificaDeletarBoleto            read  FOnDeletarBoleto            write  FOnDeletarBoleto;
@@ -225,13 +220,6 @@ begin
 
   if Assigned(FOnGerarBoleto) then
      FOnGerarBoleto(Sender, Boleto, Erro, CodResp);
-end;
-
-procedure TRscCoraBoleto.InOnGerarBoletoPix(Sender: TObject;
-  const BoletoPix: TBoletoPixResp; Erro: String; CodResp: integer);
-begin
-  if Assigned(FOnGerarBoletoPix) then
-     FOnGerarBoletoPix(Sender, BoletoPix, Erro, CodResp);
 end;
 
 procedure TRscCoraBoleto.InOnConsultarBoleto(Sender: TObject;
@@ -632,82 +620,9 @@ begin
   end;
 end;
 
-function TRscCoraBoleto.GerarBoletoPix(NewBoletoPix: TBoletoPixReq;
-  IdempotencyKey: string): Boolean;
-var
-  StrmBody      : TStringStream ;
-  StrlHeader    : TStringList ;
-  vIdHTTP : TIdHTTP;
-  SSLHandler: TIdSSLIOHandlerSocketOpenSSL;
-  sUrlBase  : string;
-  Boleto: TBoletoPixResp;
-begin
-  Result  :=  False;
-
-  StrlHeader  :=  TStringList.Create;
-  StrmBody    :=  TStringStream.Create('', TEncoding.UTF8);
-  vIdHTTP     := TIdHTTP.Create(nil);
-  SSLHandler  := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
-  try
-    try
-      SSLHandler.SSLOptions.SSLVersions       :=  [sslvTLSv1, sslvTLSv1_1, sslvTLSv1_2, sslvSSLv23];
-      SSLHandler.SSLOptions.CertFile          :=  '';
-      SSLHandler.SSLOptions.KeyFile           :=  '';
-      SSLHandler.SSLOptions.RootCertFile      :=  '';
-      SSLHandler.Host                         :=  '';
-      SSLHandler.Port                         := 443;
-      SSLHandler.SSLOptions.Mode              := sslmClient;
-
-      vIdHTTP.IOHandler := SSLHandler;
-      vIdHTTP.Request.CustomHeaders.Clear;
-      vIdHTTP.Request.BasicAuthentication :=  False;
-      vIdHTTP.Request.CustomHeaders.AddValue('Authorization','Bearer ' + Ftoken.Access_Token);
-      vIdHTTP.Request.ContentType      :=  'application/json';
-
-      StrlHeader.Add('Idempotency-Key=' + IdempotencyKey);
-
-      case FAmbiente of
-        taHomologacao : sUrlBase  :=  URLBASE_HOMOLOGACAO;
-        taProducao    : sUrlBase  :=  URLBASE_PRODUCAO;
-      end;
-
-      sUrlBase  :=  sUrlBase  + ENDPOINT_GERAR_FATURA;
-
-      try
-        vIdHTTP.Post(sUrlBase, StrlHeader, StrmBody);
-        case vIdHTTP.ResponseCode of
-          200, 201:
-            begin
-              Result  :=  True;
-              Boleto  :=  TJson.JsonToObject<TBoletoPixResp>(StrmBody.DataString);
-              try
-                InOnGerarBoletoPix(Self, Boleto, '', vIdHTTP.ResponseCode);
-              finally
-                Boleto.Free;
-              end;
-            end;
-        else
-          InOnGerarBoletoPix(Self, nil, UTF8ToWideString(UTF8Encode(StrmBody.DataString)), vIdHTTP.ResponseCode);
-        end;
-      Except on E: Exception do
-        InOnGerarBoletoPix(Self, nil, 'Erro Inesperado: '+sLineBreak+ e.Message, 4001);
-      end;
-    except on E: Exception do
-      begin
-        raise Exception.Create(e.Message);
-      end;
-    end;
-  finally
-    vIdHTTP.Free;
-    SSLHandler.Free;
-    StrmBody.Free;
-    StrlHeader.Free
-  end;
-end;
-
 function TRscCoraBoleto.GetAbout: string;
 begin
-  Result  :=  'V 1.2.0';
+  Result  :=  'V 1.3.0';
 end;
 
 function TRscCoraBoleto.ConsultarBoleto(invoice_id: string): Boolean;

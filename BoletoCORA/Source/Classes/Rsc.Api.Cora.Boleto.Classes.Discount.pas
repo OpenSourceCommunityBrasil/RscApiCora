@@ -38,7 +38,7 @@ type
   TDiscountResp = class
   private
     FFixed: Integer;
-  published
+  public
     property Fixed: Integer read FFixed write FFixed;
   end;
 

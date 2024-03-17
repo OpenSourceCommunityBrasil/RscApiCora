@@ -39,7 +39,6 @@ type
   private
     FAmount: Double;
     FDate: TDate;
-    FRate: Double;
   public
     property Amount: Double read FAmount write FAmount;
     property Date: TDate read FDate write FDate;

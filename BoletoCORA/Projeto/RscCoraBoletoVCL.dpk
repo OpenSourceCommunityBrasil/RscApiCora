@@ -74,12 +74,10 @@ contains
   Rsc.Api.Cora.Boleto in '..\Source\Rsc.Api.Cora.Boleto.pas',
   Rsc.Api.Cora.Boleto.Schema.Req.AlterarNotificacaoBoleto in '..\Source\Rsc.Api.Cora.Boleto.Schema.Req.AlterarNotificacaoBoleto.pas',
   Rsc.Api.Cora.Boleto.Schema.Req.NewBoleto in '..\Source\Rsc.Api.Cora.Boleto.Schema.Req.NewBoleto.pas',
-  Rsc.Api.Cora.Boleto.Schema.Req.NewBoletoPix in '..\Source\Rsc.Api.Cora.Boleto.Schema.Req.NewBoletoPix.pas',
   Rsc.Api.Cora.Boleto.Schema.Req.NewWebhook in '..\Source\Rsc.Api.Cora.Boleto.Schema.Req.NewWebhook.pas',
   Rsc.Api.Cora.Boleto.Schema.Resp.BoletoDetalhes in '..\Source\Rsc.Api.Cora.Boleto.Schema.Resp.BoletoDetalhes.pas',
   Rsc.Api.Cora.Boleto.Schema.Resp.Boletos in '..\Source\Rsc.Api.Cora.Boleto.Schema.Resp.Boletos.pas',
   Rsc.Api.Cora.Boleto.Schema.Resp.NewBoleto in '..\Source\Rsc.Api.Cora.Boleto.Schema.Resp.NewBoleto.pas',
-  Rsc.Api.Cora.Boleto.Schema.Resp.NewBoletoPix in '..\Source\Rsc.Api.Cora.Boleto.Schema.Resp.NewBoletoPix.pas',
   Rsc.Api.Cora.Boleto.Schema.Resp.NewWebhook in '..\Source\Rsc.Api.Cora.Boleto.Schema.Resp.NewWebhook.pas',
   Rsc.Api.Cora.Boleto.Schema.Resp.Token in '..\Source\Rsc.Api.Cora.Boleto.Schema.Resp.Token.pas',
   Rsc.Api.Cora.Boleto.Schema.Resp.Webhooks in '..\Source\Rsc.Api.Cora.Boleto.Schema.Resp.Webhooks.pas',
@@ -98,6 +96,7 @@ contains
   Rsc.Api.Cora.Boleto.Classes.Payments in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Payments.pas',
   Rsc.Api.Cora.Boleto.Classes.Schedules in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Schedules.pas',
   Rsc.Api.Cora.Boleto.Classes.Pix in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Pix.pas',
-  Rsc.Api.Cora.Boleto.Classes.ServicesResp in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.ServicesResp.pas';
+  Rsc.Api.Cora.Boleto.Classes.ServicesResp in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.ServicesResp.pas',
+  Rsc.Api.Cora.Boleto.Classes.Installment in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Installment.pas';
 
 end.
