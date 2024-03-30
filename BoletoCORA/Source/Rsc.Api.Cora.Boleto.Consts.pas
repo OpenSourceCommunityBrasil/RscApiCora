@@ -42,7 +42,7 @@ const
   ENDPOINT_AUTHORIZE                  = 'oauth/authorize?client_id={client_id}&response_type=code&redirect_uri={redirect_uri}&scopes={scopes}';
 
   ENDPOINT_GERAR_FATURA               = 'invoices/';
-  ENDPOINT_GERAR_FATURA_PIX           = 'invoices/';
+  ENDPOINT_GERAR_CARNE                = 'invoices/installments';
   ENDPOINT_CONSULTAR_FATURA           = 'invoices/{invoice_id}';
   ENDPOINT_CONSULTAR_FATURAS          = 'invoices?start={start}&end={end}';
   ENDPOINT_DELETAR_FATRA              = 'invoices/{invoice_id}';

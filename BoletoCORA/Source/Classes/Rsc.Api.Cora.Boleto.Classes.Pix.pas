@@ -38,8 +38,10 @@ type
   TPix = class
   private
     FEmv: string;
+    FKey: string;
   public
     property Emv: string read FEmv write FEmv;
+    property Key: string read FKey write FKey;
   end;
 
 implementation

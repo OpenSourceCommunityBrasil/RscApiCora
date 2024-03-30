@@ -97,6 +97,13 @@ contains
   Rsc.Api.Cora.Boleto.Classes.Schedules in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Schedules.pas',
   Rsc.Api.Cora.Boleto.Classes.Pix in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Pix.pas',
   Rsc.Api.Cora.Boleto.Classes.ServicesResp in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.ServicesResp.pas',
-  Rsc.Api.Cora.Boleto.Classes.Installment in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Installment.pas';
+  Rsc.Api.Cora.Boleto.Classes.Installment in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Installment.pas',
+  Rsc.Api.Cora.Boleto.Schema.Resp.NewCarne in '..\Source\Rsc.Api.Cora.Boleto.Schema.Resp.NewCarne.pas',
+  Rsc.Api.Cora.Boleto.Classes.AdditionalInformation in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.AdditionalInformation.pas',
+  Rsc.Api.Cora.Boleto.Classes.Notification in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Notification.pas',
+  Rsc.Api.Cora.Boleto.Classes.Seller in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Seller.pas',
+  Rsc.Api.Cora.Boleto.Classes.Buyer in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Buyer.pas',
+  Rsc.Api.Cora.Boleto.Classes.Bank_Slip in '..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Bank_Slip.pas',
+  Rsc.Api.Cora.Boleto.Schema.Req.NewCarne in '..\Source\Rsc.Api.Cora.Boleto.Schema.Req.NewCarne.pas';
 
 end.

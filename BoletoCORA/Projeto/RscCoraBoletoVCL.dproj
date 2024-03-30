@@ -155,6 +155,13 @@
         <DCCReference Include="..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Pix.pas"/>
         <DCCReference Include="..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.ServicesResp.pas"/>
         <DCCReference Include="..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Installment.pas"/>
+        <DCCReference Include="..\Source\Rsc.Api.Cora.Boleto.Schema.Resp.NewCarne.pas"/>
+        <DCCReference Include="..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.AdditionalInformation.pas"/>
+        <DCCReference Include="..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Notification.pas"/>
+        <DCCReference Include="..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Seller.pas"/>
+        <DCCReference Include="..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Buyer.pas"/>
+        <DCCReference Include="..\Source\Classes\Rsc.Api.Cora.Boleto.Classes.Bank_Slip.pas"/>
+        <DCCReference Include="..\Source\Rsc.Api.Cora.Boleto.Schema.Req.NewCarne.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

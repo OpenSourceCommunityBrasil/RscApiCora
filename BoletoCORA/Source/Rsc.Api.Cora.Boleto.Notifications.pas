@@ -36,11 +36,11 @@ interface
   uses
       Rsc.Api.Cora.Boleto.Schema.Resp.Token
     , Rsc.Api.Cora.Boleto.Schema.Resp.NewBoleto
-//    , Rsc.Api.Cora.Boleto.Schema.Resp.NewBoletoPix
     , Rsc.Api.Cora.Boleto.Schema.Resp.BoletoDetalhes
     , Rsc.Api.Cora.Boleto.Schema.Resp.Boletos
     , Rsc.Api.Cora.Boleto.Schema.Resp.NewWebhook
     , Rsc.Api.Cora.Boleto.Schema.Resp.Webhooks
+    , Rsc.Api.Cora.Boleto.Schema.Resp.NewCarne
 
     ;
 
@@ -48,7 +48,7 @@ type
 
   TNotificaToken                    = procedure(Sender : TObject; Const Token: TToken = nil; Erro: String = ''; CodResp: integer = -1)  of object;
   TNotificaGerarBoleto              = procedure(Sender : TObject; Const Boleto: TBoletoResp = nil; Erro: String = ''; CodResp: integer = -1)  of object;
-//  TNotificaGerarBoletoPix           = procedure(Sender : TObject; Const BoletoPix: TBoletoPixResp = nil; Erro: String = ''; CodResp: integer = -1)  of object;
+  TNotificaGerarCarne               = procedure(Sender : TObject; Const Carne: TCarneResp = nil; Erro: String = ''; CodResp: integer = -1)  of object;
   TNotificaConsultarBoleto          = procedure(Sender : TObject; Const BoletoDetalhes: TBoletoDetalhesResp = nil; Erro: String = ''; CodResp: integer = -1)  of object;
   TNotificaConsultarBoletos         = procedure(Sender : TObject; Const BoletosList: TBoletosListResp = nil; Erro: String = ''; CodResp: integer = -1)  of object;
   TNotificaDeletarBoleto            = procedure(Sender : TObject; Const Erro: String = ''; CodResp: integer = -1)  of object;

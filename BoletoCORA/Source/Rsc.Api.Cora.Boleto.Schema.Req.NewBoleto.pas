@@ -62,16 +62,18 @@ type
     FNotifications: TNotification;
     Fpayment_forms: TArray<string>;
     FIsCarne: Boolean;
+    FService: TService;
   public
     property Code: string read FCode write FCode;
     property Customer: TCustomer read FCustomer write FCustomer;
     property services: TArray<TServices> read FServices write FServices;
     property payment_terms: TPaymentTerms read Fpayment_terms write Fpayment_terms;
-    property installment: TInstallment read Finstallment write Finstallment;
+//    property installment: TInstallment read Finstallment write Finstallment;
     property Notifications: TNotification read FNotifications write FNotifications;
     property payment_forms: TArray<string> read Fpayment_forms write Fpayment_forms;
 
-    property IsCarne: Boolean read FIsCarne write FIsCarne;
+//    property IsCarne: Boolean read FIsCarne write FIsCarne;
+//    property service: TService read FService write FService;
 
     constructor Create;
     destructor Destroy; override;
@@ -89,6 +91,7 @@ begin
   Fpayment_terms  := TPaymentTerms.Create;
   FNotifications  := TNotification.Create;
   Finstallment    := TInstallment.Create;
+  FService        := TService.Create;
 
   SetLength(FServices, 0);
   SetLength(Fpayment_forms, 2);
@@ -106,6 +109,7 @@ begin
   Fpayment_terms.Free;
   FNotifications.Free;
   Finstallment.Free;
+  FService.Free;
 
   for Services in FServices do
     begin
@@ -124,13 +128,19 @@ begin
 
   vJson :=  TJson.ObjectToJsonObject(Self);
   try
-      if vJson.TryGetValue<boolean>('isCarne', bCarne) then
-      begin
-        vJson.RemovePair('isCarne');
-
-        if not bCarne then
-          vJson.RemovePair('installment');
-      end;
+//      if vJson.TryGetValue<boolean>('isCarne', bCarne) then
+//      begin
+//        vJson.RemovePair('isCarne');
+//
+//        if not bCarne then
+//          begin
+//            vJson.RemovePair('installment');
+//          end
+//        else
+//          begin
+//            vJson.RemovePair('services');
+//          end;
+//      end;
 
     ssdaat  :=  FormatDateTime('yyyy-mm-dd', vJson.GetValue('payment_terms').GetValue<TDate>('due_date'));
     TJSONObject(vJson.GetValue('payment_terms')).RemovePair('due_date');

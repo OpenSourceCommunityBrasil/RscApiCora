@@ -64,6 +64,8 @@ interface
     , Rsc.Api.Cora.Boleto.Schema.Req.NewWebhook
 
     , Rsc.Api.Cora.Boleto.Classes.Notifications
+    , Rsc.Api.Cora.Boleto.Schema.Req.NewCarne
+    , Rsc.Api.Cora.Boleto.Schema.Resp.NewCarne
 
     ;
 
@@ -86,6 +88,7 @@ type
     FOnDeletarWebhook: TNotificaDeletarWebhook;
     FDownalodPDF: Boolean;
     FPathDownloadPDF: string;
+    FOnGerarCarne: TNotificaGerarCarne;
 
     procedure SetCredenciais(const Value: TCredenciais);
     procedure SetAmbiente(const Value: TEnumAmbiente);
@@ -97,6 +100,7 @@ type
     { protected declarations }
     procedure InOnToken(Sender : TObject; Const Token: TToken = nil; Erro: String    = '';  CodResp: integer  = -1);
     procedure InOnGerarBoleto(Sender : TObject; Const Boleto: TBoletoResp = nil; Erro: String    = '';  CodResp: integer  = -1);
+    procedure InOnGerarCarne(Sender : TObject; Const Carne: TCarneResp = nil; Erro: String    = '';  CodResp: integer  = -1);
     procedure InOnConsultarBoleto(Sender : TObject; Const BoletoDetalhes: TBoletoDetalhesResp = nil; Erro: String    = '';  CodResp: integer  = -1);
     procedure InOnConsultarBoletos(Sender : TObject; Const BoletosList: TBoletosListResp = nil; Erro: String    = '';  CodResp: integer  = -1);
     procedure InOnDeletarBoleto(Sender : TObject; Const Erro: String    = '';  CodResp: integer  = -1);
@@ -116,6 +120,7 @@ type
     function NewToken(auth_code: string; redirect_uri: string): Boolean; overload;
 
     function GerarBoleto(NewBoleto : TBoletoReq; IdempotencyKey: string): Boolean;
+    function GerarCarne(NewCarner : TCarneReq; IdempotencyKey: string): Boolean;
     function ConsultarBoleto(invoice_id: string): Boolean;
     function ConsultarBoletos(DateStart: string; DateEnd: string; BoletoStatus: string = 'OPEN'; CpfCnpjDestinatario: string = ''; page: integer = 1; perPage: integer = 50): Boolean;
     function DeletarBoleto(invoice_id: string): Boolean;
@@ -143,6 +148,7 @@ type
 
     property OnToken                    : TNotificaToken                    read  FOnToken                    write  FOnToken;
     property OnGerarBoleto              : TNotificaGerarBoleto              read  FOnGerarBoleto              write  FOnGerarBoleto;
+    property OnGerarCarne               : TNotificaGerarCarne               read  FOnGerarCarne               write  FOnGerarCarne;
     property OnConsultarBoleto          : TNotificaConsultarBoleto          read  FOnConsultarBoleto          write  FOnConsultarBoleto;
     property OnConsultarBoletos         : TNotificaConsultarBoletos         read  FOnConsultarBoletos         write  FOnConsultarBoletos;
     property OnDeletarBoleto            : TNotificaDeletarBoleto            read  FOnDeletarBoleto            write  FOnDeletarBoleto;
@@ -220,6 +226,28 @@ begin
 
   if Assigned(FOnGerarBoleto) then
      FOnGerarBoleto(Sender, Boleto, Erro, CodResp);
+end;
+
+procedure TRscCoraBoleto.InOnGerarCarne(Sender: TObject;
+  const Carne: TCarneResp; Erro: String; CodResp: integer);
+var
+  sfilename: string;
+begin
+  if Carne <> nil then
+    begin
+      if DownalodPDF then
+        begin
+          sfilename :=  Carne.Document_Url;
+          Delete(sfilename, Pos('?', sfilename), Length(sfilename));
+          Delete(sfilename, 1, Pos('boleto-parcelado', sfilename) - 1);
+
+          VerificarPathDownloadPDF;
+          DownloadBoletoPDF(sfilename, Carne.Document_Url);
+        end;
+    end;
+
+  if Assigned(FOnGerarCarne) then
+     FOnGerarCarne(Sender, Carne, Erro, CodResp);
 end;
 
 procedure TRscCoraBoleto.InOnConsultarBoleto(Sender: TObject;
@@ -573,7 +601,7 @@ begin
         taProducao    : sUrlBase  :=  URLBASE_PRODUCAO;
       end;
 
-      sUrlBase  :=  sUrlBase  + ENDPOINT_GERAR_FATURA;
+     sUrlBase  :=  sUrlBase  + ENDPOINT_GERAR_FATURA;
 
       try
         vIdHTTP.Post(sUrlBase, StrlHeader, StrmBody);
@@ -605,6 +633,105 @@ begin
         on E: Exception do
           begin
             InOnGerarBoleto(Self, nil, 'Erro Inesperado: '+sLineBreak+ e.Message, vIdHTTP.ResponseCode);
+          end;
+      end;
+    except on E: Exception do
+      begin
+        raise Exception.Create(e.Message);
+      end;
+    end;
+  finally
+    vIdHTTP.Free;
+    SSLHandler.Free;
+    StrmBody.Free;
+    StrlHeader.Free
+  end;
+end;
+
+function TRscCoraBoleto.GerarCarne(NewCarner : TCarneReq;
+  IdempotencyKey: string): Boolean;
+var
+  StrmBody      : TStringStream ;
+  StrlHeader    : TStringStream ;
+  vIdHTTP : TIdHTTP;
+  SSLHandler: TIdSSLIOHandlerSocketOpenSSL;
+  sUrlBase  : string;
+  vCarner: TCarneResp;
+begin
+  Result  :=  False;
+
+  StrlHeader  :=  TStringStream.Create(NewCarner.ToString, TEncoding.UTF8);
+  StrmBody    :=  TStringStream.Create(EmptyStr, TEncoding.UTF8);
+  vIdHTTP     := TIdHTTP.Create(nil);
+  SSLHandler  := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
+  try
+    try
+      SSLHandler.SSLOptions.SSLVersions       :=  [sslvTLSv1_2];
+      SSLHandler.SSLOptions.CertFile          :=  '';
+      SSLHandler.SSLOptions.KeyFile           :=  '';
+      SSLHandler.SSLOptions.RootCertFile      :=  '';
+      SSLHandler.Host                         :=  '';
+      SSLHandler.Port                         := 443;
+      SSLHandler.SSLOptions.Mode              := sslmClient;
+
+      vIdHTTP.IOHandler := SSLHandler;
+      vIdHTTP.ReadTimeout                       := 10000;
+      vIdHTTP.ConnectTimeout                    := 10000;
+      vIdHTTP.HandleRedirects                   :=  False;
+      vIdHTTP.Request.CustomHeaders.Clear;
+      vIdHTTP.Request.CustomHeaders.FoldLines := False;
+      vIdHTTP.Request.CustomHeaders.AddValue('Authorization', 'Bearer ' + Ftoken.Access_Token);
+      vIdHTTP.Request.CustomHeaders.AddValue('Idempotency-Key', IdempotencyKey);
+
+      vIdHTTP.Request.BasicAuthentication :=  False;
+      vIdHTTP.Request.Authentication.Free;
+      vIdHTTP.Request.Authentication := Nil;
+
+      vIdHTTP.Request.Charset                   := 'utf-8';
+      vIdHTTP.Request.AcceptCharSet             := vIdHTTP.Request.Charset;
+      vIdHTTP.Request.Accept                    := '*/*';
+      vIdHTTP.Request.AcceptEncoding            := 'gzip, deflate, br';
+      vIdHTTP.Request.ContentType               := 'application/json';
+      vIdHTTP.Request.ContentEncoding           := 'gzip, identity';
+      vIdHTTP.Request.UserAgent                 := 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36';
+
+      case FAmbiente of
+        taHomologacao : sUrlBase  :=  URLBASE_HOMOLOGACAO;
+        taProducao    : sUrlBase  :=  URLBASE_PRODUCAO;
+      end;
+
+      sUrlBase  :=  sUrlBase  + ENDPOINT_GERAR_CARNE;
+
+      try
+        vIdHTTP.Post(sUrlBase, StrlHeader, StrmBody);
+        case vIdHTTP.ResponseCode of
+          200, 201:
+            begin
+              Result  :=  True;
+              vCarner  :=  TJson.JsonToObject<TCarneResp>(StrmBody.DataString);
+              try
+                InOnGerarCarne(Self, vCarner, '', vIdHTTP.ResponseCode);
+              finally
+                vCarner.Free;
+              end;
+            end;
+        else
+          InOnGerarCarne(Self, nil, UTF8ToWideString(UTF8Encode(StrmBody.DataString)), vIdHTTP.ResponseCode);
+        end;
+      Except
+        On E: EIdHTTPProtocolException do
+         Begin
+          If (Length(E.ErrorMessage) > 0) Or (E.ErrorCode > 0) then
+           Begin
+            If E.ErrorMessage <> '' Then
+              InOnGerarCarne(Self, nil, 'Erro Inesperado: '+sLineBreak+ E.ErrorMessage, E.ErrorCode)
+            Else
+             InOnGerarCarne(Self, nil, 'Erro Inesperado: '+sLineBreak+ e.Message, E.ErrorCode);
+           End;
+         End;
+        on E: Exception do
+          begin
+            InOnGerarCarne(Self, nil, 'Erro Inesperado: '+sLineBreak+ e.Message, vIdHTTP.ResponseCode);
           end;
       end;
     except on E: Exception do

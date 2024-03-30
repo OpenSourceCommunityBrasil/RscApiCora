@@ -32,6 +32,13 @@
 unit Rsc.Api.Cora.Boleto.Classes.Destination;
 
 interface
+  uses
+  System.Generics.Collections
+  , System.JSON
+  , System.SysUtils
+  , REST.Json.Types
+  , REST.Json
+  ;
 
 type
 
@@ -42,8 +49,17 @@ type
   public
     property Email: string read FEmail write FEmail;
     property Name: string read FName write FName;
+
+    function ToString: string;
   end;
 
 implementation
+
+{ TDestination }
+
+function TDestination.ToString: string;
+begin
+  Result :=  TJson.ObjectToJsonString(Self);
+end;
 
 end.

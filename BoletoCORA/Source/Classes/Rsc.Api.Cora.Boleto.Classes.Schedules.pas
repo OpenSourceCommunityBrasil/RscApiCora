@@ -32,6 +32,13 @@
 unit Rsc.Api.Cora.Boleto.Classes.Schedules;
 
 interface
+  uses
+  System.Generics.Collections
+  , System.JSON
+  , System.SysUtils
+  , REST.Json.Types
+  , REST.Json
+  ;
 
 type
 
@@ -46,9 +53,18 @@ type
     property Rule: string read FRule write FRule;
     property scheduled_to: TDate read Fscheduled_to write Fscheduled_to;
     property Status: string read FStatus write FStatus;
+
+    function ToString: string;
   end;
 
 implementation
+
+{ TSchedules }
+
+function TSchedules.ToString: string;
+begin
+  Result :=  TJson.ObjectToJsonString(Self);
+end;
 
 end.
 
