@@ -67,8 +67,8 @@ type
     FId: string;
     FStatus: string;
     FCreated_At: TDateTime;
-    FTotal_Amount: Integer;
-    FService: TServices;
+    FAmount_Total: Integer;
+    FServices: TArray<TServices>;
     FPayment_Terms: TPaymentTerms;
     FPayments: TArray<TPayments>;
     FPix: TPix;
@@ -79,23 +79,25 @@ type
     FBuyer: TBuyer;
     FBank_Slip: TBank_Slip;
     FAuthentication_Id: string;
+    FAdditional_Information: TArray<TAdditionalInformation>;
 
   public
-    property Id             : string read FId write FId;
-    property Status         : string read FStatus write FStatus;
-    property Created_At     : TDateTime read FCreated_At write FCreated_At;
-    property Total_Amount   : Integer read FTotal_Amount write FTotal_Amount;
-    property Service        : TServices read FService write FService;
-    property Payment_Terms  : TPaymentTerms read FPayment_Terms;
-    property Payment_Forms  : TArray<string> read FPayment_Forms write FPayment_Forms;
-    property Payments       : TArray<TPayments> read FPayments write FPayments;
-    property Pix            : TPix read FPix write FPix;
-    property Notification   : TNotification read FNotifications;
-    property Seller         : TSeller read FSeller write FSeller;
-    property Document_Url   : string read FDocument_Url write FDocument_Url;
-    property Buyer          : TBuyer read FBuyer write FBuyer;
-    property Bank_slip      : TBank_Slip read FBank_Slip write FBank_Slip;
-    property Authentication_Id: string read FAuthentication_Id write FAuthentication_Id;
+    property Id                 : string read FId write FId;
+    property Status             : string read FStatus write FStatus;
+    property Created_At         : TDateTime read FCreated_At write FCreated_At;
+    property Amount_Total       : Integer read FAmount_Total write FAmount_Total;
+    property Services           : TArray<TServices> read FServices write FServices;
+    property Payment_Terms      : TPaymentTerms read FPayment_Terms write FPayment_Terms;
+    property Payment_Forms      : TArray<string> read FPayment_Forms write FPayment_Forms;
+    property Payments           : TArray<TPayments> read FPayments write FPayments;
+    property Pix                : TPix read FPix write FPix;
+    property Notification       : TNotification read FNotifications write FNotifications;
+    property Seller             : TSeller read FSeller write FSeller;
+    property Document_Url       : string read FDocument_Url write FDocument_Url;
+    property Buyer              : TBuyer read FBuyer write FBuyer;
+    property Bank_Slip          : TBank_Slip read FBank_Slip write FBank_Slip;
+    property Authentication_Id  : string read FAuthentication_Id write FAuthentication_Id;
+    property Additional_Information: TArray<TAdditionalInformation> read FAdditional_Information write FAdditional_Information;
 
     constructor Create;
     destructor Destroy; override;
@@ -130,9 +132,8 @@ begin
   FBuyer          :=  TBuyer.Create;
   FBank_Slip      :=  TBank_Slip.Create;
   FPix            :=  TPix.Create;
-  FService        :=  TServices.Create;
 
-
+  SetLength(FServices, 0);
   SetLength(FPayments, 0);
   SetLength(Fpayment_forms, 2);
 
@@ -143,6 +144,7 @@ end;
 destructor TCarne.Destroy;
 var
   Payments: TPayments;
+  vServices: TServices;
 begin
   FPayment_Terms.Free;
   FNotifications.Free;
@@ -150,7 +152,11 @@ begin
   FBuyer.Free;
   FBank_Slip.Free;
   FPix.Free;
-  FService.Free;
+
+  for vServices in FServices do
+    begin
+      vServices.Free;
+    end;
 
   for Payments in FPayments do
     begin

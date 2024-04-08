@@ -692,8 +692,7 @@ begin
       vIdHTTP.Request.Accept                    := '*/*';
       vIdHTTP.Request.AcceptEncoding            := 'gzip, deflate, br';
       vIdHTTP.Request.ContentType               := 'application/json';
-      vIdHTTP.Request.ContentEncoding           := 'gzip, identity';
-      vIdHTTP.Request.UserAgent                 := 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36';
+      vIdHTTP.Request.UserAgent                 := 'PostmanRuntime/7.37.0';
 
       case FAmbiente of
         taHomologacao : sUrlBase  :=  URLBASE_HOMOLOGACAO;
@@ -701,44 +700,46 @@ begin
       end;
 
       sUrlBase  :=  sUrlBase  + ENDPOINT_GERAR_CARNE;
-
-      try
-        vIdHTTP.Post(sUrlBase, StrlHeader, StrmBody);
-        case vIdHTTP.ResponseCode of
-          200, 201:
-            begin
-              Result  :=  True;
-              vCarner  :=  TJson.JsonToObject<TCarneResp>(StrmBody.DataString);
-              try
-                InOnGerarCarne(Self, vCarner, '', vIdHTTP.ResponseCode);
-              finally
-                vCarner.Free;
-              end;
-            end;
-        else
-          InOnGerarCarne(Self, nil, UTF8ToWideString(UTF8Encode(StrmBody.DataString)), vIdHTTP.ResponseCode);
-        end;
-      Except
-        On E: EIdHTTPProtocolException do
-         Begin
-          If (Length(E.ErrorMessage) > 0) Or (E.ErrorCode > 0) then
-           Begin
-            If E.ErrorMessage <> '' Then
-              InOnGerarCarne(Self, nil, 'Erro Inesperado: '+sLineBreak+ E.ErrorMessage, E.ErrorCode)
-            Else
-             InOnGerarCarne(Self, nil, 'Erro Inesperado: '+sLineBreak+ e.Message, E.ErrorCode);
-           End;
-         End;
-        on E: Exception do
-          begin
-            InOnGerarCarne(Self, nil, 'Erro Inesperado: '+sLineBreak+ e.Message, vIdHTTP.ResponseCode);
-          end;
-      end;
     except on E: Exception do
       begin
-        raise Exception.Create(e.Message);
+        InOnGerarCarne(Self, nil, 'Erro ao configurar dados');
       end;
     end;
+
+    try
+      vIdHTTP.Post(sUrlBase, StrlHeader, StrmBody);
+      case vIdHTTP.ResponseCode of
+        200, 201:
+          begin
+            Result  :=  True;
+            vCarner  :=  TJson.JsonToObject<TCarneResp>(StrmBody.DataString);
+            try
+              InOnGerarCarne(Self, vCarner, '', vIdHTTP.ResponseCode);
+            finally
+              vCarner.Free;
+            end;
+          end;
+      else
+        InOnGerarCarne(Self, nil, UTF8ToWideString(UTF8Encode(StrmBody.DataString)), vIdHTTP.ResponseCode);
+      end;
+    Except
+      On E: EIdHTTPProtocolException do
+       Begin
+        If (Length(E.ErrorMessage) > 0) Or (E.ErrorCode > 0) then
+         Begin
+          If E.ErrorMessage <> '' Then
+            InOnGerarCarne(Self, nil, 'Erro Inesperado: '+sLineBreak+ E.ErrorMessage, E.ErrorCode)
+          Else
+           InOnGerarCarne(Self, nil, 'Erro Inesperado: '+sLineBreak+ e.Message, E.ErrorCode);
+         End;
+       End;
+      on E: Exception do
+        begin
+          InOnGerarCarne(Self, nil, 'Erro Inesperado: '+sLineBreak+ e.Message, vIdHTTP.ResponseCode);
+        end;
+    end;
+
+
   finally
     vIdHTTP.Free;
     SSLHandler.Free;
