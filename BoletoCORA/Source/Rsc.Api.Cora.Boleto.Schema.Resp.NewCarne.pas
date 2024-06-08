@@ -1,6 +1,6 @@
 {====================================================================================}
 {             RSC SISTEMAS                                                           }
-{        SOLUÇÕES TECNOLÓGICAS                                                       }
+{        SOLUÃ‡Ã•ES TECNOLÃ“GICAS                                                       }
 {         rscsistemas.com.br                                                         }
 {          +55 92 4141-2737                                                          }
 {      contato@rscsistemas.com.br                                                    }
@@ -11,9 +11,9 @@
 {     +55 92 984391279                                                               }
 {                                                                                    }
 {                                                                                    }
-{ Versão Original RSC SISTEMAS                                                       }
+{ VersÃ£o Original RSC SISTEMAS                                                       }
 {                                                                                    }
-{ Faça uma  doação:                                                                  }
+{ FaÃ§a uma  doaÃ§Ã£o:                                                                  }
 { Pix - Email: roniery@rscsistemas.com.br                                            }
 { Banco: NuBank                                                                      }
 {                                                                                    }
@@ -21,7 +21,7 @@
 {                                                                                    }
 { Componente TRscCoraBoleto                                                          }
 { Componente OpenSource                                                              }
-{ Licença Pública Geral GNU v3.0                                                     }
+{ LicenÃ§a PÃºblica Geral GNU v3.0                                                     }
 { Permissions of this strong copyleft license are conditioned on making available    }
 { complete source code of licensed works and modifications, which include larger     }
 { works using a licensed work, under the same license. Copyright and license         }
@@ -79,7 +79,7 @@ type
     FBuyer: TBuyer;
     FBank_Slip: TBank_Slip;
     FAuthentication_Id: string;
-    FAdditional_Information: TArray<TAdditionalInformation>;
+    FAdditional_Information: TArray<string>;
 
   public
     property Id                 : string read FId write FId;
@@ -97,7 +97,7 @@ type
     property Buyer              : TBuyer read FBuyer write FBuyer;
     property Bank_Slip          : TBank_Slip read FBank_Slip write FBank_Slip;
     property Authentication_Id  : string read FAuthentication_Id write FAuthentication_Id;
-    property Additional_Information: TArray<TAdditionalInformation> read FAdditional_Information write FAdditional_Information;
+    property Additional_Information: TArray<string> read FAdditional_Information write FAdditional_Information;
 
     constructor Create;
     destructor Destroy; override;
