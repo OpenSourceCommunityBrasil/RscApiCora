@@ -10,7 +10,7 @@ type
     FDocument: string;
     FName: string;
     FType: string;
-  published
+  public
     property business_id: string read FBusiness_Id write FBusiness_Id;
     property Document: string read FDocument write FDocument;
     property Name: string read FName write FName;

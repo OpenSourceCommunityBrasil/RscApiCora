@@ -50,7 +50,7 @@ type
     property Email: string read FEmail write FEmail;
     property Name: string read FName write FName;
 
-    function ToString: string;
+    function ToString: string;  override;
   end;
 
 implementation

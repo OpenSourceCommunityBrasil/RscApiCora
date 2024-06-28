@@ -61,7 +61,7 @@ type
     Finstallment: TInstallment;
     FNotifications: TNotification;
     Fpayment_forms: TArray<string>;
-    FIsCarne: Boolean;
+//    FIsCarne: Boolean;
     FService: TService;
   public
     property Code: string read FCode write FCode;
@@ -123,7 +123,7 @@ function TBoletoReq.ToString: string;
 var
   vJson : TJSONObject;
   ssdaat  : string;
-  bCarne: boolean;
+//  bCarne: boolean;
 begin
 
   vJson :=  TJson.ObjectToJsonObject(Self);

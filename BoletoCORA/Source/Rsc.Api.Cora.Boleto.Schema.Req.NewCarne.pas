@@ -34,7 +34,7 @@ type
     Fpayment_terms: TPaymentTerms;
     Fpayment_forms: TArray<string>;
     FService: TService;
-  published
+  public
     property Code: string read FCode write FCode;
     property Customer: TCustomer read FCustomer write FCustomer;
     property Installment: TInstallment read FInstallment write FInstallment;
@@ -42,11 +42,11 @@ type
     property payment_forms: TArray<string> read Fpayment_forms write Fpayment_forms;
     property payment_terms: TPaymentTerms read Fpayment_terms write Fpayment_terms;
     property Service: TService read FService write FService;
-  public
+
     constructor Create;
     destructor Destroy; override;
 
-    function ToString: string;
+    function ToString: string; override;
   end;
 
 

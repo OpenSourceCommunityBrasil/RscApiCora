@@ -21,7 +21,7 @@ type
     Four_number: string;
     FRegistered: Boolean;
     FUrl: string;
-  published
+  public
     property amount_paid: Integer read Famount_paid write Famount_paid;
     property Barcode: string read FBarcode write FBarcode;
     property bill_type: string read Fbill_type write Fbill_type;
