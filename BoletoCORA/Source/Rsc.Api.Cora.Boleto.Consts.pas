@@ -35,8 +35,8 @@ interface
 
 const
 
-  URLBASE_HOMOLOGACAO                 = 'https://api.stage.cora.com.br/';
-  URLBASE_PRODUCAO                    = 'https://api.cora.com.br/';
+  URLBASE_HOMOLOGACAO                 = 'https://api.stage.cora.com.br/V2/';
+  URLBASE_PRODUCAO                    = 'https://api.cora.com.br/V2/';
 
   ENDPOINT_TOKEN                      = 'oauth/token';
   ENDPOINT_AUTHORIZE                  = 'oauth/authorize?client_id={client_id}&response_type=code&redirect_uri={redirect_uri}&scopes={scopes}';

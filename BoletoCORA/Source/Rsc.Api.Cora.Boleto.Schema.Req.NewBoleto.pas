@@ -58,11 +58,11 @@ type
     FCustomer: TCustomer;
     FServices: TArray<TServices>;
     Fpayment_terms: TPaymentTerms;
-    Finstallment: TInstallment;
+//    Finstallment: TInstallment;
     FNotifications: TNotification;
     Fpayment_forms: TArray<string>;
 //    FIsCarne: Boolean;
-    FService: TService;
+//    FService: TService;
   public
     property Code: string read FCode write FCode;
     property Customer: TCustomer read FCustomer write FCustomer;
@@ -90,8 +90,8 @@ begin
   FCustomer       := TCustomer.Create;
   Fpayment_terms  := TPaymentTerms.Create;
   FNotifications  := TNotification.Create;
-  Finstallment    := TInstallment.Create;
-  FService        := TService.Create;
+//  Finstallment    := TInstallment.Create;
+//  FService        := TService.Create;
 
   SetLength(FServices, 0);
   SetLength(Fpayment_forms, 2);
@@ -108,8 +108,8 @@ begin
   FCustomer.Free;
   Fpayment_terms.Free;
   FNotifications.Free;
-  Finstallment.Free;
-  FService.Free;
+//  Finstallment.Free;
+//  FService.Free;
 
   for Services in FServices do
     begin
